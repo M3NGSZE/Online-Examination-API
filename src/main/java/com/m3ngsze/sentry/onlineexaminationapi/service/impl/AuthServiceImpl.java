@@ -2,6 +2,8 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
@@ -15,6 +17,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil.generateRefreshToken;
@@ -44,20 +49,26 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("INVALID_CREDENTIALS", e);
         }
 
-        final UserDetails userDetails = userService.loadUserByUsername(request.getEmail());
+        UserDetails userDetails = userService.loadUserByUsername(request.getEmail());
 
         return AuthDTO.builder()
                 .accessToken(jwtService.generateToken(userDetails))
-                .refreshToken(null)
+                .refreshToken(CreateRefreshToken((User) userDetails))
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
                 .build();
     }
 
-    public String CreateRefreshToken(UUID userId) {
+    public String CreateRefreshToken(User user) {
         String plainToken = TokenUtil.generateRefreshToken();
         String hashedToken = TokenUtil.hashToken(plainToken);
 
+        UserSession userSession = new UserSession();
+        userSession.setUser(user);
+        userSession.setRefreshTokenHash(hashedToken);
+        userSession.setExpiresAt(LocalDateTime.from(Instant.now().plus(30, ChronoUnit.DAYS)));
 
-        return null;
+        userSessionRepository.save(userSession);
+
+        return plainToken;
     }
 }

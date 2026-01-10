@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 public class Role extends BaseEntity {
 
     @Id
