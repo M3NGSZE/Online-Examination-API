@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,24 +14,24 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String email;
 
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", nullable = false)
     private String password;
 
-    @Column(name = "is_Enabled")
-    private Boolean isEnabled;
+    @Column(name = "is_Enabled", nullable = false)
+    private Boolean isEnabled = true;
 
-    @Column(name = "is_verified")
-    private Boolean isVerified;
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
@@ -42,8 +43,8 @@ public class User extends BaseEntity implements UserDetails {
 
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
     }
 
     @Override
@@ -52,7 +53,7 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
+    public @NonNull String getUsername() {
         return email;
     }
 
@@ -60,4 +61,14 @@ public class User extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    // These must return true for the user to be able to log in
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
 }
