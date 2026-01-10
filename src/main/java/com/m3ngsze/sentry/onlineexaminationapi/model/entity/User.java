@@ -17,21 +17,21 @@ import java.util.UUID;
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String password;
 
-    @Column(name = "is_Enabled", nullable = false)
-    private Boolean isEnabled = true;
+    @Column(name = "is_enabled", nullable = false)
+    private Boolean enabled = true;
 
     @Column(name = "is_verified", nullable = false)
-    private Boolean isVerified = false;
+    private Boolean verified = false;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
@@ -41,6 +41,8 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "info_id", referencedColumnName = "info_id")
     private UserInfo userInfo;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSession> userSessions;
 
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
@@ -59,7 +61,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     // These must return true for the user to be able to log in

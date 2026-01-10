@@ -15,7 +15,7 @@ public class UserInfo {
     @Column(name = "info_id")
     private UUID infoId;
 
-    @Column(name = "info_id")
+    @Column(name = "first_name")
     private String firstName;
 
     @Column(name = "last_name")

@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthDTO>> authentication(@RequestBody AuthRequest authRequest) throws Exception {
+    public ResponseEntity<ApiResponse<AuthDTO>> authentication(@RequestBody AuthRequest authRequest) {
         return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
                 .message("Authentication successfully completed")
-                .payload(userService.authenticate(authRequest))
+                .payload(authService.authenticate(authRequest))
                 .status(HttpStatus.OK)
                 .build());
     }
