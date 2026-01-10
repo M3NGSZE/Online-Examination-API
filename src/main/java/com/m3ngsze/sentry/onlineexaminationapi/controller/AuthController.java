@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.RegisterRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,12 @@ public class AuthController {
                 .build());
     }
 
-
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
+                .message("Authentication successfully completed")
+                .payload(null)
+                .status(HttpStatus.OK)
+                .build());
+    }
 }
