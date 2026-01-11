@@ -6,6 +6,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RegisterRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody @Valid RegisterRequest registerRequest) {
         UserDTO userDTO = authService.registerUser(registerRequest);
         return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
                 .message("New user successfully created")
