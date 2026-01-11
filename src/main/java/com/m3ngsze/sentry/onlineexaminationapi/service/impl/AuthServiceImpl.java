@@ -31,7 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -72,6 +71,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserDetails userDetails = userService.loadUserByUsername(request.getEmail());
+        User user = (User) userDetails;
+
+        if(!user.getVerified())
+            throw new BadCredentialsException("Account is not verified");
 
         return AuthDTO.builder()
                 .accessToken(jwtService.generateToken(userDetails))
@@ -87,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
         UserSession userSession = new UserSession();
         userSession.setUser(user);
         userSession.setRefreshTokenHash(hashedToken);
-        userSession.setExpiresAt(LocalDateTime.from(Instant.now().plus(30, ChronoUnit.DAYS)));
+        userSession.setExpiresAt(LocalDateTime.now().plusMinutes(1));
 
         userSessionRepository.save(userSession);
 

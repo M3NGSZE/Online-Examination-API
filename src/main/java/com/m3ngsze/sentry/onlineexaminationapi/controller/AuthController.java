@@ -22,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthDTO>> authentication(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<ApiResponse<AuthDTO>> authentication(@RequestBody @Valid AuthRequest authRequest) {
         return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
                 .message("Authentication successfully completed")
                 .payload(authService.authenticate(authRequest))
