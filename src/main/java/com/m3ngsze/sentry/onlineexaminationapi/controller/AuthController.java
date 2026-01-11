@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RegisterRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
@@ -29,10 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody RegisterRequest registerRequest) {
-        return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
-                .message("Authentication successfully completed")
-                .payload(null)
+    public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
+                .message("New user successfully created")
+                .payload(authService.registerUser(registerRequest))
                 .status(HttpStatus.OK)
                 .build());
     }
