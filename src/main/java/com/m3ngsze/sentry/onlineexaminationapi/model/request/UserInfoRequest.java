@@ -1,6 +1,5 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.request;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDate;

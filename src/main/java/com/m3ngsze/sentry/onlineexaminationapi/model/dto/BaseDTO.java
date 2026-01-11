@@ -2,7 +2,6 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
