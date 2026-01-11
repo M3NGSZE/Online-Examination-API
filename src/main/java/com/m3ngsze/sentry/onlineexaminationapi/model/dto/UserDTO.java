@@ -1,12 +1,18 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Data
 @Builder
-public class UserDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserDTO extends BaseDTO {
     private UUID userId;
 
     private String email;

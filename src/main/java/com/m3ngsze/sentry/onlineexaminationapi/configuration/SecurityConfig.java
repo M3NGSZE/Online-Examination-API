@@ -33,22 +33,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests( req -> req
+                .authorizeHttpRequests(req -> req
                         .requestMatchers(
-                                "/api/v1/users/register",
-                                "/auth/login",
+                                "/api/v1/auths/register",
+                                "/api/v1/auths/login",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement( session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntrypoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
                 );
 
         return http.build();
     }
+
 
 }

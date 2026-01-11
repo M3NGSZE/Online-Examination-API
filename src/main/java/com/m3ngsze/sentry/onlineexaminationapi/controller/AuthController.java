@@ -31,9 +31,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody RegisterRequest registerRequest) {
+        UserDTO userDTO = authService.registerUser(registerRequest);
         return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
                 .message("New user successfully created")
-                .payload(authService.registerUser(registerRequest))
+                .payload(userDTO)
                 .status(HttpStatus.OK)
                 .build());
     }
