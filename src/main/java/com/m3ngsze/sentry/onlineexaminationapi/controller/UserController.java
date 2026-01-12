@@ -1,12 +1,14 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +72,15 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
                 .message("User profile successfully fetched")
                 .payload(userService.getUserProfile())
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<ApiResponse<Boolean>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("User password successfully reset")
+                .payload(userService.resetPassword(request))
                 .status(HttpStatus.OK)
                 .build());
     }

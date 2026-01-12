@@ -10,9 +10,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Role;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
-import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
-import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
-import com.m3ngsze.sentry.onlineexaminationapi.model.request.RegisterRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
@@ -26,7 +24,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -193,6 +190,37 @@ public class AuthServiceImpl implements AuthService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+    }
+
+
+    @Override
+    public boolean resendOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("This email does not exist"));
+
+        String otp = otpGenerator.generateOtp();
+
+        otpService.saveOtp(user.getEmail(), otp);
+
+        emailService.sendOtp(user.getEmail(), otp);
+
+        return true;
+    }
+
+    @Override
+    public boolean forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new NotFoundException("This email does not exist"));
+
+        if (!request.getConfirmPassword().equals(request.getPassword()))
+            throw new BadRequestException("Passwords and confirm password do not match");
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        return true;
     }
 
 }

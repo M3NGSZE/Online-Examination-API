@@ -1,21 +1,26 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
+import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +30,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
+
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     @Override
@@ -49,17 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserProfile() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        UUID userId = UUID.fromString((String) auth.getCredentials());
-        if (auth == null) {
-            throw new NotFoundException("Authentication not found");
-        }
-
-        User user = (User) auth.getPrincipal();
-
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
+        User user = getCurrentUser();
 
         UserInfo userInfo = userInfoRepository.findById(user.getUserInfo().getInfoId())
                 .orElseThrow(() -> new NotFoundException("User info not found"));
@@ -73,5 +70,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUsers(Integer page, Integer size, String search) {
         return List.of();
+    }
+
+    @Override
+    public boolean resetPassword(ResetPasswordRequest request) {
+        User user = getCurrentUser();
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
+            throw new BadCredentialsException("Incorrect password");
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword()))
+            throw new BadRequestException("New passwords and confirm password do not match");
+
+        user.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return true;
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        UUID userId = UUID.fromString((String) auth.getCredentials());
+        if (auth == null) {
+            throw new NotFoundException("Authentication not found");
+        }
+
+        User user = (User) auth.getPrincipal();
+
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
     }
 }

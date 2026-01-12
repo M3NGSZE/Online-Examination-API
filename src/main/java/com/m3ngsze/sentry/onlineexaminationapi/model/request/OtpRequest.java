@@ -19,6 +19,7 @@ public class OtpRequest {
     @NotNull(message = "OTP cannot be null")
     @NotBlank(message = "OTP cannot be blank")
     @Size(min = 6, max = 6, message = "OTP must be 6 digits")
+    @Schema(example = "xxx-xxx")
     private String otp;
 
 }
