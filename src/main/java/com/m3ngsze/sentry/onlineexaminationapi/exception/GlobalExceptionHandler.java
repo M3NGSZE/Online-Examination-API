@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    // ✅ Generic fallback (optional but recommended)
+    // Generic fallback (optional but recommended)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(
             Exception ex,

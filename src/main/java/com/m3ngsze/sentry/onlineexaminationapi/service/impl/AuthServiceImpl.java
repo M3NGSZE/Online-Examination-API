@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
 import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
@@ -10,18 +11,22 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RegisterRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.EmailService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.OtpService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -36,15 +41,20 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+
+    private final OtpGenerator otpGenerator;
+
     private final JwtService jwtService;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     private final UserSessionRepository userSessionRepository;
     private final UserRepository UserRepository;
@@ -102,14 +112,31 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserDTO registerUser(RegisterRequest request) {
 
+        // validate
         RegisterRequest trimRequest = validateRegisterRequest(request);
 
-        UserInfo userInfo = modelMapper.map(trimRequest, UserInfo.class);
+        // 1. Save user as NOT VERIFIED
+        UserDTO userDTO = insertUser(trimRequest);
+
+        // 2. Generate OTP
+        String otp = otpGenerator.generateOtp();
+
+        // 3. Save OTP in Redis
+        otpService.saveOtp(userDTO.getEmail(), otp);
+
+        // 4. Send OTP
+        emailService.sendOtp(userDTO.getEmail(), otp);
+
+        return userDTO;
+    }
+
+    private UserDTO insertUser(RegisterRequest request) {
+        UserInfo userInfo = modelMapper.map(request, UserInfo.class);
 
         Role userRole = roleRepository.findRoleByRoleName("USER")
                 .orElseThrow(() -> new NotFoundException("This role does not exist."));
 
-        User user = modelMapper.map(trimRequest, User.class);
+        User user = modelMapper.map(request, User.class);
 
         UserInfo savedInfo = userInfoRepository.save(userInfo);
         user.setUserInfo(savedInfo );
@@ -141,6 +168,31 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid date of birth");
         }
         return request;
+    }
+
+    @Override
+    public boolean verifyOtp(OtpRequest otp) {
+        boolean isValid = otpService.verifyOtp(otp.getEmail(), otp.getOtp());
+        if (!isValid) {
+            throw new OtpException("Invalid or expired OTP");
+        }
+
+        verifyUser(otp.getEmail());
+
+        return true;
+    }
+
+    private void verifyUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("This email does not exist"));
+
+        if (user.getVerified())
+            return;
+
+        user.setVerified(true);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
     }
 
 }

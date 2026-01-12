@@ -26,7 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Admin role",

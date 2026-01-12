@@ -22,4 +22,36 @@ public class Concept {
                 .role(user != null ? user.getRole().getRoleName() : null)
                 .build();
     }*/
+
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(req -> req
+//                        // ✅ All auth endpoints bypass JWT automatically
+//                        .requestMatchers("/api/v1/auths/**").permitAll()
+//                        // ✅ Swagger & API docs
+//                        .requestMatchers(
+//                                "/v3/api-docs/**",
+//                                "/swagger-ui/**",
+//                                "/swagger-ui.html"
+//                        ).permitAll()
+//                        // ✅ Everything else needs authentication
+//                        .anyRequest().authenticated()
+//                )
+//                // Stateless session (JWT)
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//                // JWT filter before username/password authentication filter
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                // Exception handling
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint(jwtAuthEntrypoint)
+//                        .accessDeniedHandler(customAccessDeniedHandler)
+//                );
+//
+//        return http.build();
+//    }
 }
