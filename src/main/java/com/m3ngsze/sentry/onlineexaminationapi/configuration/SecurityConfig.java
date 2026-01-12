@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
+
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthEntryPoint jwtAuthEntrypoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -54,6 +55,5 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 
 }

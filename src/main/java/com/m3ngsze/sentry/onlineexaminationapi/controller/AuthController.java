@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Authentication Controller", description = "Handle user authentication, registration, refresh token, otp, and logout.")
 public class AuthController {
+
     private final AuthService authService;
 
     @PostMapping("/login")
@@ -41,4 +42,5 @@ public class AuthController {
                 .status(HttpStatus.OK)
                 .build());
     }
+
 }

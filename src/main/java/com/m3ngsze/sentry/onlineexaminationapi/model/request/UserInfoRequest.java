@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class UserInfoRequest {
+
     private String firstName;
 
     private String lastName;
@@ -17,4 +18,5 @@ public class UserInfoRequest {
     private String phoneNumber;
 
     private String profileUrl;
+
 }

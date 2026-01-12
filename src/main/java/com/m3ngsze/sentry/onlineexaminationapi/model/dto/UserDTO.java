@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO extends BaseDTO {
+
     private UUID userId;
 
     private String email;
@@ -28,4 +29,5 @@ public class UserDTO extends BaseDTO {
     private String phoneNumber;
 
     private String profileUrl;
+
 }

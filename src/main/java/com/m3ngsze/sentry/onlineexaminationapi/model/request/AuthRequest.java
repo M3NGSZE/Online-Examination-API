@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class AuthRequest {
+
     @NotNull(message = "Email cannot be null")
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid email format. Please provide a valid email address.")
@@ -15,4 +16,5 @@ public class AuthRequest {
     private String email;
 
     private String password;
+
 }

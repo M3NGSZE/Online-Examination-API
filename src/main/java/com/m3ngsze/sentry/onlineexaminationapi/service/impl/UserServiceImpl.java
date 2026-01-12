@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -67,5 +68,10 @@ public class UserServiceImpl implements UserService {
         modelMapper.map(userInfo, userDTO);
 
         return userDTO;
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers(Integer page, Integer size, String search) {
+        return List.of();
     }
 }
