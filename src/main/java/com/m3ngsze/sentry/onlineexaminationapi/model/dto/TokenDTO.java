@@ -5,12 +5,10 @@ import lombok.Data;
 
 @Builder
 @Data
-public class AuthDTO {
+public class TokenDTO {
 
     private String accessToken;
 
     private String refreshToken;
-
-    private String role;
 
 }

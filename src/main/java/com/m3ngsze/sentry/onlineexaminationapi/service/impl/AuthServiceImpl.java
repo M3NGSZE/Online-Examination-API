@@ -5,6 +5,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
 import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Role;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
@@ -33,8 +34,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 
@@ -85,13 +88,13 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Account is not verified");
 
         return AuthDTO.builder()
-                .accessToken(jwtService.generateToken(userDetails))
-                .refreshToken(CreateRefreshToken((User) userDetails))
+                .accessToken(createRefreshToken(user).getAccessToken())
+                .refreshToken(createRefreshToken(user).getRefreshToken())
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
                 .build();
     }
 
-    public String CreateRefreshToken(User user) {
+    public TokenDTO createRefreshToken(User user) {
         String plainToken = TokenUtil.generateRefreshToken();
         String hashedToken = TokenUtil.hashToken(plainToken);
 
@@ -100,9 +103,14 @@ public class AuthServiceImpl implements AuthService {
         userSession.setRefreshTokenHash(hashedToken);
         userSession.setExpiresAt(LocalDateTime.now().plusMinutes(1));
 
+        String accessToken = jwtService.generateToken(user);
+
         userSessionRepository.save(userSession);
 
-        return plainToken;
+        return TokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(plainToken)
+                .build();
     }
 
     @Override
@@ -221,6 +229,33 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         return true;
+    }
+
+    @Override
+    public AuthDTO refreshToken(String refreshToken) {
+
+        String hashToken = TokenUtil.hashToken(refreshToken);
+
+        UserSession userSession = userSessionRepository.findByRefreshTokenHash(hashToken)
+                .orElseThrow(() -> new BadRequestException("Refresh token does not exist"));
+
+        if (userSession.getExpiresAt().isBefore(ChronoLocalDateTime.from(Instant.now()))){
+            userSessionRepository.delete(userSession);
+            throw new BadRequestException("Refresh token expired");
+        }
+
+        User user = userSession.getUser();
+
+        // rotate refresh token
+        userSessionRepository.delete(userSession);
+
+        TokenDTO tokenDTO = createRefreshToken(user);
+
+        return AuthDTO.builder()
+                .accessToken(tokenDTO.getAccessToken())
+                .refreshToken(tokenDTO.getRefreshToken())
+                .role(user.getRole().getRoleName())
+                .build();
     }
 
 }

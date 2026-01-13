@@ -16,4 +16,6 @@ public interface AuthService {
 
     boolean forgotPassword(ForgotPasswordRequest request);
 
+    AuthDTO refreshToken(String refreshToken);
+
 }

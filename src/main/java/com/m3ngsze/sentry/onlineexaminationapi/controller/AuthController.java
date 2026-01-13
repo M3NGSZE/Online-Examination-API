@@ -77,4 +77,18 @@ public class AuthController {
                 .build());
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(
+            @RequestBody
+            @NotNull(message = "refresh token cannot be null")
+            @NotBlank(message = "refresh token cannot be blank")
+            String refreshToken
+    ) {
+        return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
+                .message("Refresh token successfully reset")
+                .payload(authService.refreshToken(refreshToken))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
 }
