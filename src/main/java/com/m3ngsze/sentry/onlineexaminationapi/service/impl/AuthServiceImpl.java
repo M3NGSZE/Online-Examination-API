@@ -3,7 +3,6 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
-import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
@@ -16,10 +15,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.EmailService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.OtpService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
@@ -51,10 +47,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final OtpGenerator otpGenerator;
 
-    private final JwtService jwtService;
     private final UserService userService;
     private final OtpService otpService;
     private final EmailService emailService;
+    private final TokenService tokenService;
 
     private final UserSessionRepository userSessionRepository;
     private final UserRepository UserRepository;
@@ -88,28 +84,9 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Account is not verified");
 
         return AuthDTO.builder()
-                .accessToken(createRefreshToken(user).getAccessToken())
-                .refreshToken(createRefreshToken(user).getRefreshToken())
+                .accessToken(tokenService.createRefreshToken(user).getAccessToken())
+                .refreshToken(tokenService.createRefreshToken(user).getRefreshToken())
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
-                .build();
-    }
-
-    public TokenDTO createRefreshToken(User user) {
-        String plainToken = TokenUtil.generateRefreshToken();
-        String hashedToken = TokenUtil.hashToken(plainToken);
-
-        UserSession userSession = new UserSession();
-        userSession.setUser(user);
-        userSession.setRefreshTokenHash(hashedToken);
-        userSession.setExpiresAt(LocalDateTime.now().plusMinutes(1));
-
-        String accessToken = jwtService.generateToken(user);
-
-        userSessionRepository.save(userSession);
-
-        return TokenDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(plainToken)
                 .build();
     }
 
@@ -249,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
         // rotate refresh token
         userSessionRepository.delete(userSession);
 
-        TokenDTO tokenDTO = createRefreshToken(user);
+        TokenDTO tokenDTO = tokenService.createRefreshToken(user);
 
         return AuthDTO.builder()
                 .accessToken(tokenDTO.getAccessToken())

@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
@@ -26,6 +27,12 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "password_hash", nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
 
     @Column(name = "is_enabled", nullable = false)
     private Boolean enabled = true;
