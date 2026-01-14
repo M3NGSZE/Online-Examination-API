@@ -235,4 +235,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Override
+    public boolean logout() {
+        return false;
+    }
+
 }

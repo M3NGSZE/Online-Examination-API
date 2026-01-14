@@ -7,6 +7,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
+    @Operation(summary = "Login with email and password", description = "Login will provide access token to any endpoint and authorize user base on role")
     public ResponseEntity<ApiResponse<AuthDTO>> authentication(@RequestBody @Valid AuthRequest authRequest) {
         return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
                 .message("Authentication successfully completed")
@@ -38,6 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register account", description = "User must provide credential for register in requirement below")
     public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody @Valid RegisterRequest registerRequest) {
         UserDTO userDTO = authService.registerUser(registerRequest);
         return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
@@ -48,6 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
+    @Operation(summary = "Verify account with otp", description = "After complete information user must verify account with otp")
     public ResponseEntity<ApiResponse<Boolean>> verifyOtp(@RequestBody @Valid OtpRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Account verified successfully")
@@ -57,6 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/resend-otp")
+    @Operation(summary = "Resent otp to user account", description = "User can resent otp again in case otp is invalid or expired")
     public ResponseEntity<ApiResponse<Boolean>> resendOtp(
             @RequestBody
             @NotNull(message = "Email cannot be null")
@@ -73,6 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
+    @Operation(summary = "Reset new password if user forgot password", description = "User must verify account with otp then create new password")
     public ResponseEntity<ApiResponse<Boolean>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User password successfully reset")
@@ -82,6 +88,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
+    @Operation(summary = "Renew fresh token", description = "When token expired client side can new token and refresh token by refresh token")
     public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(
             @RequestBody
             @NotNull(message = "refresh token cannot be null")
@@ -99,6 +106,17 @@ public class AuthController {
     @Operation(summary = "Login with Google", description = "Redirects to Google login page")
     public void googleLogin(HttpServletResponse response) throws IOException {
         response.sendRedirect("/oauth2/authorization/google");
+    }
+
+    @PostMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Logout of account", description = "Logging out of session")
+    public ResponseEntity<ApiResponse<Boolean>> logout(){
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("Logout successfully")
+                .payload(null)
+                .status(HttpStatus.OK)
+                .build());
     }
 
 }

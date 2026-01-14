@@ -76,7 +76,8 @@ public class UserController {
                 .build());
     }
 
-    @PatchMapping("/")
+    @PatchMapping("/reset-password")
+    @Operation(summary = "Reset new password", description = "User must require to input old password and new password")
     public ResponseEntity<ApiResponse<Boolean>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User password successfully reset")
