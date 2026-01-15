@@ -17,6 +17,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 
@@ -83,9 +82,12 @@ public class AuthServiceImpl implements AuthService {
         if(!user.getVerified())
             throw new BadCredentialsException("Account is not verified");
 
+        TokenDTO refreshToken = tokenService.createRefreshToken(user);
+        System.out.println("logRefresh: " + refreshToken.getRefreshToken());
+
         return AuthDTO.builder()
-                .accessToken(tokenService.createRefreshToken(user).getAccessToken())
-                .refreshToken(tokenService.createRefreshToken(user).getRefreshToken())
+                .accessToken(refreshToken.getAccessToken())
+                .refreshToken(refreshToken.getRefreshToken())
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
                 .build();
     }
@@ -180,7 +182,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean resendOtp(String email) {
-        User user = userRepository.findByEmail(email)
+
+        if (!EmailValidatorUtil.isValid(email)) {
+            throw new BadRequestException("Invalid email format");
+        }
+
+        User user = userRepository.findByEmail(email.trim())
                 .orElseThrow(() -> new NotFoundException("This email does not exist"));
 
         String otp = otpGenerator.generateOtp();
@@ -194,7 +201,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean forgotPassword(ForgotPasswordRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail().trim())
                 .orElseThrow(() -> new NotFoundException("This email does not exist"));
 
         if (!request.getConfirmPassword().equals(request.getPassword()))
@@ -210,13 +217,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDTO refreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new BadRequestException("Refresh token cannot be null or blank");
+        }
 
-        String hashToken = TokenUtil.hashToken(refreshToken);
+        String hashToken = TokenUtil.hashToken(refreshToken.trim());
 
         UserSession userSession = userSessionRepository.findByRefreshTokenHash(hashToken)
                 .orElseThrow(() -> new BadRequestException("Refresh token does not exist"));
 
-        if (userSession.getExpiresAt().isBefore(ChronoLocalDateTime.from(Instant.now()))){
+        if (userSession.getExpiresAt().isBefore(LocalDateTime.now())){
             userSessionRepository.delete(userSession);
             throw new BadRequestException("Refresh token expired");
         }

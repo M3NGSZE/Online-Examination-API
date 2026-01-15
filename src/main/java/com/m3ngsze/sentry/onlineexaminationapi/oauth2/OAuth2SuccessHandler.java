@@ -48,9 +48,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // Look up user by email (more reliable than custom userId attribute)
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> {
-                    return new BadRequestException("User not found. Please ensure the user was created during OAuth2 processing.");
-                });
+                        .orElseThrow(() -> new BadRequestException("User not found. Please ensure the user was created during OAuth2 processing."));
 
         log.info("Found user: {} (ID: {})", email, user.getUserId());
 

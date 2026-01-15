@@ -6,14 +6,10 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,14 +58,7 @@ public class AuthController {
 
     @PostMapping("/resend-otp")
     @Operation(summary = "Resent otp to user account", description = "User can resent otp again in case otp is invalid or expired")
-    public ResponseEntity<ApiResponse<Boolean>> resendOtp(
-            @RequestBody
-            @NotNull(message = "Email cannot be null")
-            @NotBlank(message = "Email cannot be blank")
-            @Email(message = "Invalid email format. Please provide a valid email address.")
-            @Schema(example = "example@gmail.com")
-            String email
-    ) {
+    public ResponseEntity<ApiResponse<Boolean>> resendOtp(@RequestParam String email) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("OTP resend successfully")
                 .payload(authService.resendOtp(email))
@@ -89,12 +78,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     @Operation(summary = "Renew fresh token", description = "When token expired client side can new token and refresh token by refresh token")
-    public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(
-            @RequestBody
-            @NotNull(message = "refresh token cannot be null")
-            @NotBlank(message = "refresh token cannot be blank")
-            String refreshToken
-    ) {
+    public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(@RequestParam String refreshToken) {
         return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
                 .message("Refresh token successfully reset")
                 .payload(authService.refreshToken(refreshToken))
