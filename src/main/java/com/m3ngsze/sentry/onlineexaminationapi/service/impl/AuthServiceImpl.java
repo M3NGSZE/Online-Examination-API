@@ -88,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
         return AuthDTO.builder()
                 .accessToken(refreshToken.getAccessToken())
                 .refreshToken(refreshToken.getRefreshToken())
+                .expiresIn(300L)
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
                 .build();
     }
@@ -241,13 +242,23 @@ public class AuthServiceImpl implements AuthService {
         return AuthDTO.builder()
                 .accessToken(tokenDTO.getAccessToken())
                 .refreshToken(tokenDTO.getRefreshToken())
+                .expiresIn(300L)
                 .role(user.getRole().getRoleName())
                 .build();
     }
 
     @Override
-    public boolean logout() {
-        return false;
+    public boolean logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new BadRequestException("Refresh token cannot be null or blank");
+        }
+
+        UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(refreshToken.trim(), userService.getCurrentUser())
+                .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
+
+        userSessionRepository.delete(userSession);
+
+        return true;
     }
 
 }

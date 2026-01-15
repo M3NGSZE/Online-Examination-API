@@ -11,6 +11,8 @@ public class AuthDTO {
 
     private String refreshToken;
 
+    private Long expiresIn;
+
     private String role;
 
 }

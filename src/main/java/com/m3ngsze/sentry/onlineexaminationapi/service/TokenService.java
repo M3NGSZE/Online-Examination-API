@@ -25,7 +25,7 @@ public class TokenService {
         UserSession userSession = new UserSession();
         userSession.setUser(user);
         userSession.setRefreshTokenHash(hashedToken);
-        userSession.setExpiresAt(LocalDateTime.now().plusMinutes(1));
+        userSession.setExpiresAt(LocalDateTime.now().plusDays(7));
 
         String accessToken = jwtService.generateToken(user);
 

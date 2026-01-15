@@ -57,6 +57,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         AuthDTO authDTO = AuthDTO.builder()
                 .accessToken(refreshToken.getAccessToken())
                 .refreshToken(refreshToken.getRefreshToken())
+                .expiresIn(300L)
                 .role(user.getRole().getRoleName())
                 .build();
 
