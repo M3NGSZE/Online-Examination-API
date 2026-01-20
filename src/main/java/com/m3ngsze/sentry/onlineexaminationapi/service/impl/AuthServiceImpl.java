@@ -35,8 +35,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -83,7 +81,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Account is not verified");
 
         TokenDTO refreshToken = tokenService.createRefreshToken(user);
-        System.out.println("logRefresh: " + refreshToken.getRefreshToken());
 
         return AuthDTO.builder()
                 .accessToken(refreshToken.getAccessToken())
@@ -253,7 +250,11 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Refresh token cannot be null or blank");
         }
 
-        UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(refreshToken.trim(), userService.getCurrentUser())
+        String hashToken = TokenUtil.hashToken(refreshToken.trim());
+
+        User user = userService.getCurrentUser();
+
+        UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(hashToken, user)
                 .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
 
         userSessionRepository.delete(userSession);
