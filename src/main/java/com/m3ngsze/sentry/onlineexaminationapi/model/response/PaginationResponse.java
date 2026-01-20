@@ -1,39 +1,43 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.response;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class PaginationResponse {
-    private Integer totalItems;
+    private Long totalItems;
     private Integer totalPages;
     private Integer currentPage;
     private Integer pageSize;
-    private Integer hasNextPage;
-    private Integer hasPreviousPage;
+
+    private boolean hasNextPage;
+    private boolean hasPreviousPage;
+
     private Integer nextPage;
     private Integer previousPage;
     private Integer firstPage;
     private Integer lastPage;
 
-    public PaginationResponse calculatePagination(Integer totalItems, Integer page, Integer size) {
-        PaginationResponse pagination = new PaginationResponse();
+    public static PaginationResponse of(Long totalItems, int page, int size) {
 
         int totalPages = (int) Math.ceil((double) totalItems / size);
-        int currentPage = Math.max(1, Math.min(page, totalPages));
-        int hasNextPage = currentPage < totalPages ? 1 : 0;
-        int hasPreviousPage = currentPage > 1 ? 1 : 0;
+        int currentPage = Math.max(1, Math.min(page, Math.max(totalPages, 1)));
 
-        pagination.setTotalItems(totalItems);
-        pagination.setPageSize(size);
-        pagination.setTotalPages(totalPages);
-        pagination.setCurrentPage(currentPage);
-        pagination.setHasNextPage(hasNextPage);
-        pagination.setHasPreviousPage(hasPreviousPage);
-        pagination.setNextPage(hasNextPage == 1 ? currentPage + 1 : null);
-        pagination.setPreviousPage(hasPreviousPage == 1 ? currentPage - 1 : null);
-        pagination.setFirstPage(totalPages > 0 ? 1 : null);
-        pagination.setLastPage(totalPages > 0 ? totalPages : null);
+        boolean hasNext = currentPage < totalPages;
+        boolean hasPrev = currentPage > 1;
 
-        return pagination;
+        return PaginationResponse.builder()
+                .totalItems(totalItems)
+                .pageSize(size)
+                .totalPages(totalPages)
+                .currentPage(currentPage)
+                .hasNextPage(hasNext)
+                .hasPreviousPage(hasPrev)
+                .nextPage(hasNext ? currentPage + 1 : null)
+                .previousPage(hasPrev ? currentPage - 1 : null)
+                .firstPage(totalPages > 0 ? 1 : null)
+                .lastPage(totalPages > 0 ? totalPages : null)
+                .build();
     }
 }

@@ -6,12 +6,20 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
+import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +29,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -68,8 +75,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getAllUsers(Integer page, Integer size, String search) {
-        return List.of();
+    public ListResponse<UserDTO> getAllUsers(Integer page, Integer size, String search, Sort.Direction sort, Boolean enable, Boolean verify) {
+
+        Specification<User> spec  = Specification
+                .where(UserSpecification.search(search))
+                .and(UserSpecification.isEnabled(enable))
+                .and(UserSpecification.isVerified(verify));
+
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(sort, "createdAt")
+        );
+
+        Page<UserDTO> userPage = userRepository.findAll(spec, pageable)
+                .map(user -> modelMapper.map(user, UserDTO.class));
+
+
+        return ListResponse.<UserDTO>builder()
+                .data(userPage.getContent())
+                .pagination(PaginationResponse.of(userPage.getTotalElements(), page, size))
+                .build();
     }
 
     @Override
@@ -104,4 +130,5 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
+
 }

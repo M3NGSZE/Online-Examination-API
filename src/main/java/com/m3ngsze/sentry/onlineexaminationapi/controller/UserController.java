@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,11 +38,14 @@ public class UserController {
     public ResponseEntity<ApiResponse<ListResponse<UserDTO>>> getAllUsers(
             @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
             @RequestParam(defaultValue = "3") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
-            @RequestParam(required = false) String search
-    ) {
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort,
+            @RequestParam(defaultValue = "true") Boolean enable,
+            @RequestParam(defaultValue = "true") Boolean verify
+            ) {
         return ResponseEntity.ok(ApiResponse.<ListResponse<UserDTO>>builder()
-                .message("A user successfully fetched")
-                .payload(null)
+                .message("All users successfully fetched")
+                .payload(userService.getAllUsers(page, size, search, sort, enable, verify))
                 .status(HttpStatus.OK)
                 .build());
     }
