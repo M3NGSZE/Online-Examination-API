@@ -127,26 +127,27 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     return existingUser;
                 })
                 .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setPassword("OAUTH2_USER"); // Placeholder password (not used for OAuth2 authentication)
+                    newUser.setProvider(AuthProvider.GOOGLE);
+                    newUser.setProviderId(providerId);
+                    newUser.setRole(userRole);
+                    newUser.setEnabled(true);
+                    newUser.setVerified(true);
+                    User save = userRepository.save(newUser);
+
                     // New user - create account
                     log.info("Creating new OAuth2 user: {}", email);
                     UserInfo userInfo = new UserInfo();
+                    userInfo.setUser(save);
                     userInfo.setFirstName(firstName);
                     userInfo.setLastName(lastName);
                     userInfo.setProfileUrl(profile);
 
                     userInfoRepository.save(userInfo);
 
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setPassword("OAUTH2_USER"); // Placeholder password (not used for OAuth2 authentication)
-                    newUser.setProvider(AuthProvider.GOOGLE);
-                    newUser.setProviderId(providerId);
-                    newUser.setUserInfo(userInfo);
-                    newUser.setRole(userRole);
-                    newUser.setEnabled(true);
-                    newUser.setVerified(true);
-
-                    return userRepository.save(newUser);
+                    return save;
                 });
 
 

@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "users")
@@ -44,18 +46,17 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "info_id", referencedColumnName = "info_id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSession> userSessions;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<RoomOwner> roomOwners;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Enrollment> enrollments;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomOwner> roomOwners;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Enrollment> enrollments;
 
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {

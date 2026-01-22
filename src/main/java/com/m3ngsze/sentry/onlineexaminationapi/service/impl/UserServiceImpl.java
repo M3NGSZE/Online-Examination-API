@@ -14,6 +14,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +30,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -91,6 +94,16 @@ public class UserServiceImpl implements UserService {
         Page<UserDTO> userPage = userRepository.findAll(spec, pageable)
                 .map(user -> modelMapper.map(user, UserDTO.class));
 
+        List<UUID> infoId = userPage.map(UserDTO::getUserId).toList();
+
+//        userRepository.findAll
+
+        List<UserInfo> infoPage = userInfoRepository.findAllById(infoId);
+
+        log.info("idinfo" + infoId.toString());
+        log.info("info" + infoPage.toString());
+
+        modelMapper.map(infoPage, userPage);
 
         return ListResponse.<UserDTO>builder()
                 .data(userPage.getContent())

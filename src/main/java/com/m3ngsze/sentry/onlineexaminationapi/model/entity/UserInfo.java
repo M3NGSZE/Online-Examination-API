@@ -32,4 +32,8 @@ public class UserInfo extends BaseEntity {
 
     @Column(name = "profile_url")
     private String profileUrl;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 }
