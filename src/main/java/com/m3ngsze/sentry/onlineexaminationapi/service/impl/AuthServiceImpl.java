@@ -13,7 +13,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AuthProvider;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
@@ -53,7 +52,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserSessionRepository userSessionRepository;
     private final UserRepository UserRepository;
     private final ModelMapper modelMapper;
-    private final UserInfoRepository userInfoRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
 
@@ -126,33 +124,10 @@ public class AuthServiceImpl implements AuthService {
         userInfo.setUser(user);
         user.setUserInfo(userInfo);
 
-//        UserInfo savedInfo = userInfoRepository.save(userInfo);
-//
         User saveUser = userRepository.save(user);
-//        UserDTO userDTO = modelMapper.map(savedInfo, UserDTO.class);
-//        modelMapper.map(saveUser, userDTO);
 
         return modelMapper.map(saveUser, UserDTO.class);
     }
-
-//    private UserDTO insertUser(RegisterRequest request) {
-//        UserInfo userInfo = modelMapper.map(request, UserInfo.class);
-//
-//        Role userRole = roleRepository.findRoleByRoleName("USER")
-//                .orElseThrow(() -> new NotFoundException("This role does not exist."));
-//
-//        User user = modelMapper.map(request, User.class);
-//
-//        UserInfo savedInfo = userInfoRepository.save(userInfo);
-//        user.setUserInfo(savedInfo );
-//        user.setRole(userRole);
-//        User saveUser = userRepository.save(user);
-//
-//        UserDTO userDTO = modelMapper.map(saveUser, UserDTO.class);
-//        modelMapper.map(savedInfo, userDTO);
-//
-//        return userDTO;
-//    }
 
     private RegisterRequest validateRegisterRequest(RegisterRequest request) {
         request.setEmail(request.getEmail().trim().toLowerCase());

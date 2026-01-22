@@ -12,6 +12,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,13 +69,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserProfile() {
         User user = getCurrentUser();
 
-        UserInfo userInfo = userInfoRepository.findById(user.getUserInfo().getInfoId())
-                .orElseThrow(() -> new NotFoundException("User info not found"));
-
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        modelMapper.map(userInfo, userDTO);
-
-        return userDTO;
+        return UtilMapper.toUserDTO(user);
     }
 
     @Override
@@ -100,8 +95,6 @@ public class UserServiceImpl implements UserService {
 
         List<UserInfo> infoPage = userInfoRepository.findAllById(infoId);
 
-        log.info("idinfo" + infoId.toString());
-        log.info("info" + infoPage.toString());
 
         modelMapper.map(infoPage, userPage);
 
