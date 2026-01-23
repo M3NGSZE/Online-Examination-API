@@ -24,6 +24,14 @@ public class Concept {
     }*/
 
 
+    //{map two time insert to object into one}
+    //        UserInfo userInfo = userInfoRepository.findById(user.getUserInfo().getInfoId())
+//                .orElseThrow(() -> new NotFoundException("User info not found"));
+//
+//        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+//        modelMapper.map(userInfo, userDTO);
+
+
 //    @Bean
 //    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //

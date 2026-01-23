@@ -4,6 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Role;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AuthProvider;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
@@ -127,14 +128,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     return existingUser;
                 })
                 .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setPassword("OAUTH2_USER"); // Placeholder password (not used for OAuth2 authentication)
-                    newUser.setProvider(AuthProvider.GOOGLE);
-                    newUser.setProviderId(providerId);
-                    newUser.setRole(userRole);
-                    newUser.setEnabled(true);
-                    newUser.setVerified(true);
+                    User newUser = getUser(email, providerId, userRole);
                     User save = userRepository.save(newUser);
 
                     // New user - create account
@@ -172,6 +166,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         } catch (Exception e) {
             throw new OAuth2AuthenticationException("Failed to process OAuth2 user: " + e.getMessage());
         }
+    }
+
+    private static User getUser(String email, String providerId, Role userRole) {
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword("OAUTH2_USER"); // Placeholder password (not used for OAuth2 authentication)
+        newUser.setProvider(AuthProvider.GOOGLE);
+        newUser.setAccountStatus(AccountStatus.ACTIVATED);
+        newUser.setProviderId(providerId);
+        newUser.setRole(userRole);
+        newUser.setEnabled(true);
+        newUser.setVerified(true);
+        return newUser;
     }
 
 }

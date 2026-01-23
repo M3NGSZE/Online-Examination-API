@@ -4,19 +4,18 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
+import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +28,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -40,10 +39,10 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserInfoRepository userInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
+
+    private final AuthService authService;
 
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
@@ -56,13 +55,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        UserInfo userInfo = userInfoRepository.findById(user.getUserInfo().getInfoId())
-                .orElseThrow(() -> new NotFoundException("User info not found"));
+        if (!user.getEnabled())
+            throw new BadRequestException("User is not enabled");
 
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        modelMapper.map(userInfo, userDTO);
-
-        return userDTO;
+        return UtilMapper.toUserDTO(user);
     }
 
     @Override
@@ -127,6 +123,27 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+    @Override
+    public boolean deactivateUser(UUID userId) {
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean deactivateAccount(String refreshToken, String authHeader) {
+        User user = getCurrentUser();
+
+        user.setEnabled(false);
+        user.setAccountStatus(AccountStatus.DEACTIVATED);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        authService.logout(refreshToken, authHeader);
+
+        return true;
     }
 
 }

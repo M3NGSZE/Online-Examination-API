@@ -69,8 +69,7 @@ public class UserController {
 
     @GetMapping("/user-profile")
     @Operation(
-            summary = "User role",
-            description = "Use for get own user profile"
+            summary = "view own profile info"
     )
     public ResponseEntity<ApiResponse<UserDTO>> getUserProfile() {
         return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
@@ -86,6 +85,20 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User password successfully reset")
                 .payload(userService.resetPassword(request))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("/deactivate-account")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for deactivate user account for temporary"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> deactivateAccount(@RequestParam String refreshToken, @RequestHeader("Authorization") String authHeader){
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("User successfully deactivated")
+                .payload(userService.deactivateAccount(refreshToken, authHeader))
                 .status(HttpStatus.OK)
                 .build());
     }

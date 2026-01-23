@@ -18,6 +18,6 @@ public interface AuthService {
 
     AuthDTO refreshToken(String refreshToken);
 
-    boolean logout(String refreshToken);
+    boolean logout(String refreshToken, String authHeader);
 
 }

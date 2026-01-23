@@ -95,10 +95,10 @@ public class AuthController {
     @PostMapping("/logout")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Logout of account", description = "Logging out of session")
-    public ResponseEntity<ApiResponse<Boolean>> logout(@RequestParam String refreshToken) {
+    public ResponseEntity<ApiResponse<Boolean>> logout(@RequestParam String refreshToken, @RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Logout successfully")
-                .payload(authService.logout(refreshToken))
+                .payload(authService.logout(refreshToken, authHeader))
                 .status(HttpStatus.OK)
                 .build());
     }

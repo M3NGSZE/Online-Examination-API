@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
+import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
@@ -10,6 +11,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Role;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AuthProvider;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
@@ -54,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
     private final ModelMapper modelMapper;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
 
     // do not separate authenticationManager.authenticate it can cause error "Circular Dependency"
@@ -119,6 +122,7 @@ public class AuthServiceImpl implements AuthService {
         User user = modelMapper.map(request, User.class);
         user.setRole(userRole);
         user.setProvider(AuthProvider.LOCAL);
+        user.setAccountStatus(AccountStatus.ACTIVATED);
 
         UserInfo userInfo = modelMapper.map(request, UserInfo.class);
         userInfo.setUser(user);
@@ -132,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
     private RegisterRequest validateRegisterRequest(RegisterRequest request) {
         request.setEmail(request.getEmail().trim().toLowerCase());
 
-        if (UserRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (UserRepository.findByEmailAndDeletedAtIsNull(request.getEmail(), null).isPresent()) {
             throw new BadRequestException("This email already been used");
         }
 
@@ -243,7 +247,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean logout(String refreshToken) {
+    public boolean logout(String refreshToken, String authHeader) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new BadRequestException("Refresh token cannot be null or blank");
         }
@@ -254,6 +258,15 @@ public class AuthServiceImpl implements AuthService {
 
         UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(hashToken, user)
                 .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BadRequestException("Invalid Authorization header");
+        }
+
+        // Revoke JWT in Redis
+        String token = authHeader.substring(7);
+        long jwtTokenExpiry = JwtService.JWT_TOKEN_EXPIRY;// seconds until token expires
+        tokenService.revokeToken(token, jwtTokenExpiry);
 
         userSessionRepository.delete(userSession);
 

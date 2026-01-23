@@ -7,7 +7,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface UserService extends UserDetailsService {
@@ -21,5 +20,9 @@ public interface UserService extends UserDetailsService {
     boolean resetPassword(ResetPasswordRequest request);
 
     User getCurrentUser();
+
+    boolean deactivateUser(UUID userId);
+
+    boolean deactivateAccount(String refreshToken, String authHeader);
 
 }
