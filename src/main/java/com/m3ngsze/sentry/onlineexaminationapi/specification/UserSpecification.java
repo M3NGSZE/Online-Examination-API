@@ -1,6 +1,9 @@
 package com.m3ngsze.sentry.onlineexaminationapi.specification;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecification {
@@ -23,9 +26,13 @@ public class UserSpecification {
 
             String like = "%" + keyword.toLowerCase() + "%";
 
+            // JOIN User -> UserInfo
+            Join<User, UserInfo> userInfoJoin = root.join("userInfo", JoinType.LEFT);
+
             return cb.or(
-                    cb.like(cb.lower(root.get("email")), like),
-                    cb.like(cb.lower(root.get("username")), like)
+//                    cb.like(cb.lower(root.get("email")), like),
+                    cb.like(cb.lower(userInfoJoin.get("firstName")), like),
+                    cb.like(cb.lower(userInfoJoin.get("lastName")), like)
             );
         };
     }

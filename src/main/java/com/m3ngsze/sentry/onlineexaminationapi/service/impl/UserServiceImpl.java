@@ -87,22 +87,14 @@ public class UserServiceImpl implements UserService {
         );
 
         Page<UserDTO> userPage = userRepository.findAll(spec, pageable)
-                .map(user -> modelMapper.map(user, UserDTO.class));
-
-        List<UUID> infoId = userPage.map(UserDTO::getUserId).toList();
-
-//        userRepository.findAll
-
-        List<UserInfo> infoPage = userInfoRepository.findAllById(infoId);
-
-
-        modelMapper.map(infoPage, userPage);
+                .map(UtilMapper::toUserDTO);
 
         return ListResponse.<UserDTO>builder()
                 .data(userPage.getContent())
                 .pagination(PaginationResponse.of(userPage.getTotalElements(), page, size))
                 .build();
     }
+
 
     @Override
     public boolean resetPassword(ResetPasswordRequest request) {
