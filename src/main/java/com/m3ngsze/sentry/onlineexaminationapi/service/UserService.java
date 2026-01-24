@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public interface UserService {
 
     boolean deactivateAccount(String refreshToken, HttpServletRequest request);
 
-    boolean reactivateAccount(String email);
+    boolean reactivateAccount(OtpRequest request);
 
     boolean deactivateUser(UUID userId);
 

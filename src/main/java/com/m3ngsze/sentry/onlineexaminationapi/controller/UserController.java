@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
@@ -24,13 +25,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/v1/users")
 @RequiredArgsConstructor
-@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "User Controller", description = "Handle user information, use by admin and user role")
 public class UserController {
 
     private final UserService userService;
 
     @GetMapping("")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Admin role",
@@ -52,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{user-id}")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Admin role",
@@ -69,6 +71,7 @@ public class UserController {
     }
 
     @GetMapping("/user-profile")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(
             summary = "view own profile info"
     )
@@ -81,6 +84,7 @@ public class UserController {
     }
 
     @PatchMapping("/reset-password")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Reset new password", description = "User must require to input old password and new password")
     public ResponseEntity<ApiResponse<Boolean>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
@@ -91,6 +95,7 @@ public class UserController {
     }
 
     @PatchMapping("/deactivate-account")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
             summary = "User role",
@@ -105,14 +110,14 @@ public class UserController {
     }
 
     @PatchMapping("/reactivate-account")
-    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
             summary = "User role",
             description = "Use for reactivate user account back"
-    )    public ResponseEntity<ApiResponse<Boolean>> authentication(@RequestParam String email) {
+    )
+    public ResponseEntity<ApiResponse<Boolean>> authentication(@RequestBody @Valid OtpRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User successfully reactivated")
-                .payload(userService.reactivateAccount(email))
+                .payload(userService.reactivateAccount(request))
                 .status(HttpStatus.OK)
                 .build());
     }
