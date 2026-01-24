@@ -8,19 +8,15 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.TokenService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
     private final JwtService jwtService;
-    private final RedisTemplate<String, Object> redisTemplate;
-
     private final UserSessionRepository userSessionRepository;
 
     @Override
@@ -41,25 +37,6 @@ public class TokenServiceImpl implements TokenService {
                 .accessToken(accessToken)
                 .refreshToken(plainToken)
                 .build();
-    }
-
-    // Save token in Redis blacklist
-    @Override
-    public void revokeToken(String token, long expirationSeconds) {
-        String key = "revokedToken:" + token;
-        redisTemplate.opsForValue().set(key, "true", expirationSeconds, TimeUnit.SECONDS);
-    }
-
-    // Check if token is revoked
-    @Override
-    public boolean isTokenRevoked(String token) {
-        String key = "revokedToken:" + token;
-        return redisTemplate.hasKey(key);
-    }
-
-    @Override
-    public String extractAccessToken(String authHeader) {
-        return authHeader.substring(7);
     }
 
 }

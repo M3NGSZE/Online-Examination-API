@@ -46,8 +46,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final OtpGenerator otpGenerator;
 
-    private final UserService userService;
-    private final OtpService otpService;
+    private final DetailService detailService;
+    private final RedisService redisService;
     private final EmailService emailService;
     private final TokenService tokenService;
 
@@ -56,8 +56,6 @@ public class AuthServiceImpl implements AuthService {
     private final ModelMapper modelMapper;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
-    private final JwtService jwtService;
-
 
     // do not separate authenticationManager.authenticate it can cause error "Circular Dependency"
 
@@ -76,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("INVALID_CREDENTIALS", e);
         }
 
-        UserDetails userDetails = userService.loadUserByUsername(request.getEmail());
+        UserDetails userDetails = detailService.loadUserByUsername(request.getEmail());
         User user = (User) userDetails;
 
         if(!user.getVerified())
@@ -106,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         String otp = otpGenerator.generateOtp();
 
         // 3. Save OTP in Redis
-        otpService.saveOtp(userDTO.getEmail(), otp);
+        redisService.saveOtp(userDTO.getEmail(), otp);
 
         // 4. Send OTP
         emailService.sendOtp(userDTO.getEmail(), otp);
@@ -156,7 +154,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean verifyOtp(OtpRequest otp) {
-        boolean isValid = otpService.verifyOtp(otp.getEmail(), otp.getOtp());
+        boolean isValid = redisService.verifyOtp(otp.getEmail(), otp.getOtp());
         if (!isValid) {
             throw new OtpException("Invalid or expired OTP");
         }
@@ -192,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
 
         String otp = otpGenerator.generateOtp();
 
-        otpService.saveOtp(user.getEmail(), otp);
+        redisService.saveOtp(user.getEmail(), otp);
 
         emailService.sendOtp(user.getEmail(), otp);
 
@@ -254,7 +252,7 @@ public class AuthServiceImpl implements AuthService {
 
         String hashToken = TokenUtil.hashToken(refreshToken.trim());
 
-        User user = userService.getCurrentUser();
+        User user = detailService.getCurrentUser();
 
         UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(hashToken, user)
                 .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
@@ -266,7 +264,7 @@ public class AuthServiceImpl implements AuthService {
         // Revoke JWT in Redis
         String token = authHeader.substring(7);
         long jwtTokenExpiry = JwtService.JWT_TOKEN_EXPIRY;// seconds until token expires
-        tokenService.revokeToken(token, jwtTokenExpiry);
+        redisService.revokeToken(token, jwtTokenExpiry);
 
         userSessionRepository.delete(userSession);
 

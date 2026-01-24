@@ -7,10 +7,4 @@ public interface TokenService {
 
     TokenDTO createRefreshToken(User user);
 
-    void revokeToken(String token, long expirationSeconds);
-
-    boolean isTokenRevoked(String token);
-
-    String extractAccessToken(String authHeader);
-
 }

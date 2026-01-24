@@ -9,11 +9,10 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordReques
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,10 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +37,8 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AuthService authService;
-
-    @Override
-    public @NonNull UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
-    }
-
+    private final AuthServiceImpl authService;
+    private final DetailService detailService;
 
     @Override
     public UserDTO getUserById(UUID userId) {
@@ -63,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserProfile() {
-        User user = getCurrentUser();
+        User user = detailService.getCurrentUser();
 
         return UtilMapper.toUserDTO(user);
     }
@@ -94,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean resetPassword(ResetPasswordRequest request) {
-        User user = getCurrentUser();
+        User user = detailService.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
             throw new BadCredentialsException("Incorrect password");
@@ -109,23 +99,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        UUID userId = UUID.fromString((String) auth.getCredentials());
-        if (auth == null) {
-            throw new NotFoundException("Authentication not found");
-        }
-
-        User user = (User) auth.getPrincipal();
-
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-
-        return user;
-    }
-
-    @Override
     public boolean deactivateUser(UUID userId) {
         return false;
     }
@@ -133,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean deactivateAccount(String refreshToken, String authHeader) {
-        User user = getCurrentUser();
+        User user = detailService.getCurrentUser();
 
         user.setEnabled(false);
         user.setAccountStatus(AccountStatus.DEACTIVATED);

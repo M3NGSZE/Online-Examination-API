@@ -1,6 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.jwt;
 
-import com.m3ngsze.sentry.onlineexaminationapi.service.TokenService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +22,8 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final TokenService tokenService;
     private final UserDetailsService userDetailsService;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(
@@ -43,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             String email = jwtService.extractEmail(token);
 
-            if (tokenService.isTokenRevoked(token)) {
+            if (redisService.isTokenRevoked(token)) {
                 throw  new RuntimeException("Token revoked");
             }
 
