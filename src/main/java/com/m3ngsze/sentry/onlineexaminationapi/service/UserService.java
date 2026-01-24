@@ -23,6 +23,8 @@ public interface UserService {
 
     boolean reactivateAccount(OtpRequest request);
 
-    boolean deactivateUser(UUID userId);
+    boolean adminDeactivateUser(UUID userId);
+
+    boolean adminReactivateUser(UUID userId);
 
 }

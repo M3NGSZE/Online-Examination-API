@@ -94,7 +94,7 @@ public class UserController {
                 .build());
     }
 
-    @PatchMapping("/deactivate-account")
+    @PatchMapping("/deactivate")
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
@@ -109,15 +109,45 @@ public class UserController {
                 .build());
     }
 
-    @PatchMapping("/reactivate-account")
+    @PatchMapping("/reactivate")
     @Operation(
             summary = "User role",
             description = "Use for reactivate user account back"
     )
-    public ResponseEntity<ApiResponse<Boolean>> authentication(@RequestBody @Valid OtpRequest request) {
+    public ResponseEntity<ApiResponse<Boolean>> reactivateAccount(@RequestBody @Valid OtpRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User successfully reactivated")
                 .payload(userService.reactivateAccount(request))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("/admin/deactivate/{user-id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Admin role",
+            description = "Admin use for deactivate user account for temporary"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> adminDeactivateUserAccount(@PathVariable("user-id") UUID userId) {
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("User successfully deactivated")
+                .payload(userService.adminDeactivateUser(userId))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("/admin/reactivate/{user-id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Admin role",
+            description = "Admin use for reactivate user account back"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> adminReactivateUserAccount(@PathVariable("user-id") UUID userId) {
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("Admin successfully reactivated user")
+                .payload(userService.adminReactivateUser(userId))
                 .status(HttpStatus.OK)
                 .build());
     }

@@ -10,6 +10,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordReques
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final DetailService detailService;
     private final RedisService redisService;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
     public UserDTO getUserById(UUID userId) {
@@ -111,15 +113,19 @@ public class UserServiceImpl implements UserService {
     public boolean deactivateAccount(String refreshToken, HttpServletRequest request) {
         User user = detailService.getCurrentUser();
 
+        deactivate(user);
+        authService.logout(refreshToken, request);
+
+        userSessionRepository.deleteByUser_UserId(user.getUserId());
+        return true;
+    }
+
+    private void deactivate(User user) {
         user.setEnabled(false);
         user.setAccountStatus(AccountStatus.DEACTIVATED);
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
-
-        authService.logout(refreshToken, request);
-
-        return true;
     }
 
     @Override
@@ -137,17 +143,45 @@ public class UserServiceImpl implements UserService {
         UserDetails userDetails = detailService.loadUserByUsername(request.getEmail());
         User user = (User) userDetails;
 
+        reactivate(user);
+
+        return true;
+    }
+
+    private void reactivate(User user) {
         user.setEnabled(true);
         user.setAccountStatus(AccountStatus.ACTIVATED);
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean adminDeactivateUser(UUID userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!user.getAccountStatus().equals(AccountStatus.ACTIVATED))
+            throw new BadRequestException("User is not activated yet");
+
+        deactivate(user);
+
+        userSessionRepository.deleteByUser_UserId(userId);
 
         return true;
     }
 
     @Override
-    public boolean deactivateUser(UUID userId) {
+    public boolean adminReactivateUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!user.getAccountStatus().equals(AccountStatus.DEACTIVATED))
+            throw new BadRequestException("User is not deactivated");
+
+        reactivate(user);
+
         return false;
     }
 

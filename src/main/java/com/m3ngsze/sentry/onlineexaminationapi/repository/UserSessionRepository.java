@@ -13,4 +13,8 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
     Optional<UserSession> findByRefreshTokenHash(String refreshTokenHash);
 
     Optional<UserSession> findByRefreshTokenHashAndUser(String refreshTokenHash, User user);
+
+    List<UserSession> findByUser_UserId(UUID userUserId);
+
+    void deleteByUser_UserId(UUID userUserId);
 }

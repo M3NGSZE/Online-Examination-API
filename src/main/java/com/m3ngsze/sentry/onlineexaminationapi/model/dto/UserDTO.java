@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class UserDTO extends BaseDTO {
     private UUID userId;
 
     private String email;
+
+    private AccountStatus accountStatus;
 
     private String firstName;
 
