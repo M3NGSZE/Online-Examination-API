@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthService {
 
@@ -18,6 +19,6 @@ public interface AuthService {
 
     AuthDTO refreshToken(String refreshToken);
 
-    boolean logout(String refreshToken, String authHeader);
+    boolean logout(String refreshToken, HttpServletRequest request);
 
 }

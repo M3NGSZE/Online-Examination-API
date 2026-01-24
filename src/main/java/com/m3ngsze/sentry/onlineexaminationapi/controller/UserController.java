@@ -8,6 +8,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
@@ -95,10 +96,23 @@ public class UserController {
             summary = "User role",
             description = "Use for deactivate user account for temporary"
     )
-    public ResponseEntity<ApiResponse<Boolean>> deactivateAccount(@RequestParam String refreshToken, @RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<ApiResponse<Boolean>> deactivateAccount(@RequestParam String refreshToken, HttpServletRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User successfully deactivated")
-                .payload(userService.deactivateAccount(refreshToken, authHeader))
+                .payload(userService.deactivateAccount(refreshToken, request))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("/reactivate-account")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for reactivate user account back"
+    )    public ResponseEntity<ApiResponse<Boolean>> authentication(@RequestParam String email) {
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("User successfully reactivated")
+                .payload(userService.reactivateAccount(email))
                 .status(HttpStatus.OK)
                 .build());
     }

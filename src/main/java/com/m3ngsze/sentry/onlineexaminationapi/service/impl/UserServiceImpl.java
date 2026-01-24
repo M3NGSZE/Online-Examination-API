@@ -2,17 +2,21 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.AuthRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +41,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final OtpGenerator otpGenerator;
 
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
     private final DetailService detailService;
+    private final RedisService redisService;
+    private final EmailService emailService;
+
 
     @Override
     public UserDTO getUserById(UUID userId) {
@@ -47,6 +56,9 @@ public class UserServiceImpl implements UserService {
 
         if (!user.getEnabled())
             throw new BadRequestException("User is not enabled");
+
+        if (user.getAccountStatus().equals(AccountStatus.DELETED))
+            throw new NotFoundException("User not found");
 
         return UtilMapper.toUserDTO(user);
     }
@@ -72,7 +84,8 @@ public class UserServiceImpl implements UserService {
                 Sort.by(sort, "createdAt")
         );
 
-        Page<UserDTO> userPage = userRepository.findAll(spec, pageable)
+        Page<UserDTO> userPage = (Page<UserDTO>) userRepository.findAll(spec, pageable)
+                .filter(u -> !u.getAccountStatus().equals(AccountStatus.DELETED))
                 .map(UtilMapper::toUserDTO);
 
         return ListResponse.<UserDTO>builder()
@@ -99,13 +112,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deactivateUser(UUID userId) {
-        return false;
-    }
-
-    @Override
     @Transactional
-    public boolean deactivateAccount(String refreshToken, String authHeader) {
+    public boolean deactivateAccount(String refreshToken, HttpServletRequest request) {
         User user = detailService.getCurrentUser();
 
         user.setEnabled(false);
@@ -114,9 +122,41 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        authService.logout(refreshToken, authHeader);
+        authService.logout(refreshToken, request);
 
         return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean reactivateAccount(String email) {
+        if (!EmailValidatorUtil.isValid(email)) {
+            throw new BadRequestException("Invalid email format");
+        }
+
+        UserDetails userDetails = detailService.loadUserByUsername(email.trim());
+        User user = (User) userDetails;
+
+        user.setEnabled(true);
+        user.setAccountStatus(AccountStatus.ACTIVATED);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        String otp = otpGenerator.generateOtp();
+
+        // 3. Save OTP in Redis
+        redisService.saveOtp(email.trim(), otp);
+
+        // 4. Send OTP
+        emailService.sendOtp(email.trim(), otp);
+
+        return true;
+    }
+
+    @Override
+    public boolean deactivateUser(UUID userId) {
+        return false;
     }
 
 }

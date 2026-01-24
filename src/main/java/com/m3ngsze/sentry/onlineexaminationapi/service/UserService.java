@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.UUID;
@@ -17,8 +18,10 @@ public interface UserService {
 
     boolean resetPassword(ResetPasswordRequest request);
 
-    boolean deactivateUser(UUID userId);
+    boolean deactivateAccount(String refreshToken, HttpServletRequest request);
 
-    boolean deactivateAccount(String refreshToken, String authHeader);
+    boolean reactivateAccount(String email);
+
+    boolean deactivateUser(UUID userId);
 
 }

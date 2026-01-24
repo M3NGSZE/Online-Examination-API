@@ -8,6 +8,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -95,10 +96,10 @@ public class AuthController {
     @PostMapping("/logout")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Logout of account", description = "Logging out of session")
-    public ResponseEntity<ApiResponse<Boolean>> logout(@RequestParam String refreshToken, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<ApiResponse<Boolean>> logout(@RequestParam String refreshToken, HttpServletRequest request) {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Logout successfully")
-                .payload(authService.logout(refreshToken, authHeader))
+                .payload(authService.logout(refreshToken, request))
                 .status(HttpStatus.OK)
                 .build());
     }

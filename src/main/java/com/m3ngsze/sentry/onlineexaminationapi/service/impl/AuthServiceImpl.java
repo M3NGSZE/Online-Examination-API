@@ -22,6 +22,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -64,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
+                            request.getEmail().trim(),
                             request.getPassword()
                     )
             );
@@ -75,10 +76,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserDetails userDetails = detailService.loadUserByUsername(request.getEmail());
-        User user = (User) userDetails;
-
-        if(!user.getVerified())
-            throw new BadCredentialsException("Account is not verified");
+        User user = getUser((User) userDetails);
 
         TokenDTO refreshToken = tokenService.createRefreshToken(user);
 
@@ -88,6 +86,22 @@ public class AuthServiceImpl implements AuthService {
                 .expiresIn(300L)
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
                 .build();
+    }
+
+    private static User getUser(User userDetails) {
+        if(!userDetails.getVerified())
+            throw new BadCredentialsException("Account is not verified");
+
+        if (!userDetails.getEnabled()) {
+            if (userDetails.getAccountStatus() == AccountStatus.DELETED) {
+                throw new BadCredentialsException("INVALID_CREDENTIALS");
+            } else if (userDetails.getAccountStatus() == AccountStatus.DEACTIVATED) {
+                throw new BadCredentialsException("Account is deactivated. Please reactivate.");
+            } else {
+                throw new BadCredentialsException("Account disabled");
+            }
+        }
+        return userDetails;
     }
 
     @Override
@@ -245,7 +259,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean logout(String refreshToken, String authHeader) {
+    public boolean logout(String refreshToken, HttpServletRequest request) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new BadRequestException("Refresh token cannot be null or blank");
         }
@@ -257,12 +271,7 @@ public class AuthServiceImpl implements AuthService {
         UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(hashToken, user)
                 .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Invalid Authorization header");
-        }
-
-        // Revoke JWT in Redis
-        String token = authHeader.substring(7);
+        String token =detailService.extractAccessToken(request);
         long jwtTokenExpiry = JwtService.JWT_TOKEN_EXPIRY;// seconds until token expires
         redisService.revokeToken(token, jwtTokenExpiry);
 
