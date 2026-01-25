@@ -207,6 +207,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public boolean forgotPassword(ForgotPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail().trim())
                 .orElseThrow(() -> new NotFoundException("This email does not exist"));
@@ -218,6 +219,8 @@ public class AuthServiceImpl implements AuthService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+
+        userSessionRepository.deleteByUser_UserId(user.getUserId());
 
         return true;
     }

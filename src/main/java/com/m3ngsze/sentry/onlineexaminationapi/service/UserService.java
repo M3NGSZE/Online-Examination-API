@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
@@ -17,7 +18,7 @@ public interface UserService {
 
     ListResponse<UserDTO> getAllUsers(Integer page, Integer size, String search, Sort.Direction sort, Boolean enable, Boolean verify);
 
-    boolean resetPassword(ResetPasswordRequest request);
+    AuthDTO resetPassword(ResetPasswordRequest request);
 
     boolean deactivateAccount();
 

@@ -3,6 +3,8 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
 
     private final DetailService detailService;
     private final RedisService redisService;
+    private final TokenService tokenService;
 
     @Override
     public UserDTO getUserById(UUID userId) {
@@ -98,7 +101,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean resetPassword(ResetPasswordRequest request) {
+    @Transactional
+    public AuthDTO resetPassword(ResetPasswordRequest request) {
         User user = detailService.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
@@ -110,7 +114,18 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setUpdatedAt(LocalDateTime.now());
 
-        return true;
+        userRepository.save(user);
+
+        userSessionRepository.deleteByUser_UserId(user.getUserId());
+
+        TokenDTO refreshToken = tokenService.createRefreshToken(user);
+
+        return AuthDTO.builder()
+                .accessToken(refreshToken.getAccessToken())
+                .refreshToken(refreshToken.getRefreshToken())
+                .expiresIn(300L)
+                .role(user.getRole().getRoleName())
+                .build();
     }
 
     @Override

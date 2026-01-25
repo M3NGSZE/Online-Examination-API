@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
@@ -86,8 +87,8 @@ public class UserController {
     @PatchMapping("/reset-password")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Reset new password", description = "User must require to input old password and new password")
-    public ResponseEntity<ApiResponse<Boolean>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+    public ResponseEntity<ApiResponse<AuthDTO>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        return ResponseEntity.ok(ApiResponse.<AuthDTO>builder()
                 .message("User password successfully reset")
                 .payload(userService.resetPassword(request))
                 .status(HttpStatus.OK)
