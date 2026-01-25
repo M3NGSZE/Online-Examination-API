@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
@@ -15,7 +16,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AuthService authService;
     private final DetailService detailService;
     private final RedisService redisService;
     private final UserSessionRepository userSessionRepository;
@@ -110,13 +109,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean deactivateAccount(String refreshToken, HttpServletRequest request) {
+    public boolean deactivateAccount() {
         User user = detailService.getCurrentUser();
 
         deactivate(user);
-        authService.logout(refreshToken, request);
 
-        userSessionRepository.deleteByUser_UserId(user.getUserId());
         return true;
     }
 
@@ -126,19 +123,17 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+        userSessionRepository.deleteByUser_UserId(user.getUserId());
     }
 
     @Override
     @Transactional
     public boolean reactivateAccount(OtpRequest request) {
-        if (!EmailValidatorUtil.isValid(request.getEmail())) {
-            throw new BadRequestException("Invalid email format");
-        }
 
         boolean isValid = redisService.verifyOtp(request.getEmail(), request.getOtp());
 
         if (!isValid)
-            throw new BadRequestException("Invalid email format");
+            throw new OtpException("Invalid or expired OTP");
 
         UserDetails userDetails = detailService.loadUserByUsername(request.getEmail());
         User user = (User) userDetails;
@@ -167,8 +162,6 @@ public class UserServiceImpl implements UserService {
 
         deactivate(user);
 
-        userSessionRepository.deleteByUser_UserId(userId);
-
         return true;
     }
 
@@ -183,6 +176,38 @@ public class UserServiceImpl implements UserService {
         reactivate(user);
 
         return false;
+    }
+
+    @Override
+    public void deleteCurrentUser() {
+        User user = detailService.getCurrentUser();
+
+        if (!user.getAccountStatus().equals(AccountStatus.ACTIVATED))
+            throw new BadRequestException("Current user is not activated");
+
+        delete(user);
+    }
+
+    @Override
+    public void adminDeleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!user.getAccountStatus().equals(AccountStatus.ACTIVATED))
+            throw new BadRequestException("Current user is not activated");
+
+        delete(user);
+    }
+
+    private void delete(User user) {
+        user.setEnabled(false);
+        user.setAccountStatus(AccountStatus.DELETED);
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setDeletedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        userSessionRepository.deleteByUser(user);
     }
 
 }

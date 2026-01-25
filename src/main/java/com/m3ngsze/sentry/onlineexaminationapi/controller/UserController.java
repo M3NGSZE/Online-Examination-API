@@ -9,7 +9,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
@@ -101,10 +100,10 @@ public class UserController {
             summary = "User role",
             description = "Use for deactivate user account for temporary"
     )
-    public ResponseEntity<ApiResponse<Boolean>> deactivateAccount(@RequestParam String refreshToken, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Boolean>> deactivateAccount() {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("User successfully deactivated")
-                .payload(userService.deactivateAccount(refreshToken, request))
+                .payload(userService.deactivateAccount())
                 .status(HttpStatus.OK)
                 .build());
     }
@@ -148,6 +147,38 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Admin successfully reactivated user")
                 .payload(userService.adminReactivateUser(userId))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @DeleteMapping("/delete-account")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "User use for delete their account permanently"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> deleteAccount() {
+        userService.deleteCurrentUser();
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("User successfully deleted")
+                .payload(true)
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @DeleteMapping("/admin/delete-account/{user-id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Admin role",
+            description = "Admin use for delete their account permanently"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> adminDeleteUserAccount(@PathVariable("user-id") UUID userId) {
+        userService.adminDeleteUser(userId);
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .message("Admin successfully deleted user")
+                .payload(true)
                 .status(HttpStatus.OK)
                 .build());
     }

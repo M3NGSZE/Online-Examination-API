@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 "/api/v1/auths/register",
                                 "/api/v1/auths/verify-otp",
                                 "/api/v1/auths/**",
-                                "/api/v1/users/reactivate-account",
+                                "/api/v1/users/reactivate",
                                 "/oauth2/authorization/**",
                                 "/login/oauth2/**",
                                 "/v3/api-docs/**",

@@ -1,5 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.jwt;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -52,6 +54,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(email);
+
+                User user = (User) userDetails;
+                if (!user.getAccountStatus().equals(AccountStatus.ACTIVATED))
+                    throw  new RuntimeException("Account not activated");
 
                 if (jwtService.validateToken(token, userDetails)) {
 

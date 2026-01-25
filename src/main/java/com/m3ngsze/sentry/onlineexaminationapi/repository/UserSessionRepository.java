@@ -17,4 +17,6 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
     List<UserSession> findByUser_UserId(UUID userUserId);
 
     void deleteByUser_UserId(UUID userUserId);
+
+    void deleteByUser(User user);
 }
