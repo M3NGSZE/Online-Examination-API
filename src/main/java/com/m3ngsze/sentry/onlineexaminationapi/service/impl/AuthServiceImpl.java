@@ -18,10 +18,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.OtpGenerator;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -34,9 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -152,17 +147,17 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("This email already been used");
         }
 
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-        request.setFirstName(ConvertUtil.toPascalCase(request.getFirstName().trim()));
-        request.setLastName(ConvertUtil.toPascalCase(request.getLastName().trim()));
-        request.setPlaceOfBirth(request.getPlaceOfBirth().trim());
-        request.setPhoneNumber(request.getPhoneNumber().trim());
-        request.setProfileUrl(request.getProfileUrl().trim());
+        UserInfoRequest toUserInfoRequest = modelMapper.map(request, UserInfoRequest.class);
 
-        long years = ChronoUnit.YEARS.between(request.getDateOfBirth(), LocalDate.now());
-        if (years < 13 || years > 100) {
-            throw new BadRequestException("Invalid date of birth");
-        }
+        UserInfoRequest userInfoRequest = RequestMapUtil.validateRegisterRequest(toUserInfoRequest);
+
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        request.setFirstName(userInfoRequest.getFirstName());
+        request.setLastName(userInfoRequest.getLastName());
+        request.setPlaceOfBirth(userInfoRequest.getPlaceOfBirth());
+        request.setPhoneNumber(userInfoRequest.getPhoneNumber());
+        request.setProfileUrl(userInfoRequest.getProfileUrl());
+
         return request;
     }
 

@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.UserInfoRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
@@ -179,6 +180,20 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Admin successfully deleted user")
                 .payload(true)
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PutMapping("/user-info")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+            summary = "Update user profile",
+            description = "Use for update user information"
+    )
+    public ResponseEntity<ApiResponse<UserDTO>> updateUserInfo(@RequestBody @Valid UserInfoRequest request) {
+        return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
+                .message("User successfully updated")
+                .payload(userService.updateUser(request))
                 .status(HttpStatus.OK)
                 .build());
     }

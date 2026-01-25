@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.UserInfoRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import org.springframework.data.domain.Sort;
 
@@ -29,5 +30,7 @@ public interface UserService {
     void deleteCurrentUser();
 
     void adminDeleteUser(UUID userId);
+
+    UserDTO updateUser(UserInfoRequest request);
 
 }

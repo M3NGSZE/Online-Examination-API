@@ -31,7 +31,7 @@ public class RegisterRequest {
     private String firstName;
 
     @NotNull(message = "last name cannot be null")
-    @NotBlank(message = "first name cannot be blank")
+    @NotBlank(message = "last name cannot be blank")
     private String lastName;
 
     private LocalDate dateOfBirth;

@@ -5,18 +5,23 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.OtpRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.UserInfoRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.RequestMapUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,12 +42,14 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserSessionRepository userSessionRepository;
+    private final UserInfoRepository userInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     private final DetailService detailService;
     private final RedisService redisService;
-    private final UserSessionRepository userSessionRepository;
 
     @Override
     public UserDTO getUserById(UUID userId) {
@@ -207,6 +214,31 @@ public class UserServiceImpl implements UserService {
         userSessionRepository.deleteByUser_UserId(user.getUserId());
 
         System.out.println("userId: " + user.getUserId());
+    }
+
+    @Override
+    public UserDTO updateUser(UserInfoRequest request) {
+        User user = detailService.getCurrentUser();
+
+        UserInfo userInfo = userInfoRepository.findByUser(user)
+                .orElseThrow(() -> new NotFoundException("User info not found"));
+
+        UserInfoRequest userInfoRequest = RequestMapUtil.validateRegisterRequest(request);
+
+        userInfo.setFirstName(userInfoRequest.getFirstName());
+        userInfo.setLastName(userInfoRequest.getLastName());
+        userInfo.setPlaceOfBirth(userInfoRequest.getPlaceOfBirth());
+        userInfo.setPhoneNumber(userInfoRequest.getPhoneNumber());
+        userInfo.setProfileUrl(userInfoRequest.getProfileUrl());
+
+        // Save changes
+        userInfoRepository.save(userInfo);
+
+        // Optional: update the User object in memory if you need any computed fields
+        user.setUserInfo(userInfo);
+
+        // Return mapped DTO
+        return modelMapper.map(user, UserDTO.class);
     }
 
 }

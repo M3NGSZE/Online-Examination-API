@@ -51,4 +51,5 @@ public class DetailServiceImpl implements DetailService {
 
         return authHeader.substring(7);
     }
+
 }
