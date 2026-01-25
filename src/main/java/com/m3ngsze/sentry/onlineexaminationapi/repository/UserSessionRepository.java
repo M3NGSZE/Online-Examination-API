@@ -3,8 +3,10 @@ package com.m3ngsze.sentry.onlineexaminationapi.repository;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,9 +16,11 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 
     Optional<UserSession> findByRefreshTokenHashAndUser(String refreshTokenHash, User user);
 
-    List<UserSession> findByUser_UserId(UUID userUserId);
+    @Modifying
+    @Query(value = """
+    DELETE FROM user_sessions us
+        WHERE us.user_id = :userId
+    """, nativeQuery = true)
+    void deleteByUser_UserId( @Param("userId")UUID userId);
 
-    void deleteByUser_UserId(UUID userUserId);
-
-    void deleteByUser(User user);
 }

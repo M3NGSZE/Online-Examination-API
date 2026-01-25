@@ -14,7 +14,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.*;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.EmailValidatorUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -179,11 +178,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteCurrentUser() {
         User user = detailService.getCurrentUser();
-
-        if (!user.getAccountStatus().equals(AccountStatus.ACTIVATED))
-            throw new BadRequestException("Current user is not activated");
 
         delete(user);
     }
@@ -207,7 +204,9 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        userSessionRepository.deleteByUser(user);
+        userSessionRepository.deleteByUser_UserId(user.getUserId());
+
+        System.out.println("userId: " + user.getUserId());
     }
 
 }
