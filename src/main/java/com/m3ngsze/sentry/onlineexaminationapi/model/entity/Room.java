@@ -24,9 +24,6 @@ public class Room extends BaseEntity {
     @Column(nullable = false)
     private String subject;
 
-    @Column(name = "secret_code_hash", nullable = false)
-    private String secretCodeHash;
-
     @Column(name = "room_limit")
     private Integer limit;
 
@@ -38,4 +35,7 @@ public class Room extends BaseEntity {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomInviteCode> roomInviteCodes;
 }
