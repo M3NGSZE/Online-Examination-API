@@ -1,5 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.utility;
 
+import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
+
 public class ConvertUtil {
 
     public static String toPascalCase(String input) {
@@ -18,5 +20,16 @@ public class ConvertUtil {
         }
         return result.toString().trim();
     }
+
+    public static Integer parseRoomLimit(String roomLimitStr) {
+        if (roomLimitStr == null || roomLimitStr.isBlank()) return null;
+
+        try {
+            return Integer.valueOf(roomLimitStr.trim());
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Room limit must be a number");
+        }
+    }
+
 
 }

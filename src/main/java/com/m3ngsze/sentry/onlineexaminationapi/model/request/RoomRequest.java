@@ -11,8 +11,6 @@ public class RoomRequest {
 
     private String subject;
 
-    private String secretCodeHash;
-
     private Integer limit;
 
 }

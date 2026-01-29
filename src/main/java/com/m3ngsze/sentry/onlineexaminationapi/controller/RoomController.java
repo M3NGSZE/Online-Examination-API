@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,10 +31,10 @@ public class RoomController {
             summary = "User role",
             description = "Use for create new room"
     )
-    public ResponseEntity<ApiResponse<RoomDTO>> createRoom(){
+    public ResponseEntity<ApiResponse<RoomDTO>> createRoom(@RequestBody RoomRequest roomRequest) {
         return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
                 .message("All users successfully fetched")
-                .payload(null)
+                .payload(roomService.createRoom(roomRequest))
                 .status(HttpStatus.OK)
                 .build());
     }
