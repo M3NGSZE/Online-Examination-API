@@ -11,10 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/rooms")
@@ -33,8 +32,36 @@ public class RoomController {
     )
     public ResponseEntity<ApiResponse<RoomDTO>> createRoom(@RequestBody RoomRequest roomRequest) {
         return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
-                .message("All users successfully fetched")
+                .message("Room successfully created")
                 .payload(roomService.createRoom(roomRequest))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PatchMapping("{room-id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for update user room"
+    )
+    public ResponseEntity<ApiResponse<RoomDTO>> updateRoom(@PathVariable("room-id") UUID roomId, @RequestBody RoomRequest roomRequest) {
+        return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
+                .message("Room successfully updated")
+                .payload(roomService.updateRoom(roomId, roomRequest))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @GetMapping("{room-id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for create new room"
+    )
+    public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(@PathVariable("room-id") UUID roomId) {
+        return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
+                .message("All users successfully fetched")
+                .payload(null)
                 .status(HttpStatus.OK)
                 .build());
     }

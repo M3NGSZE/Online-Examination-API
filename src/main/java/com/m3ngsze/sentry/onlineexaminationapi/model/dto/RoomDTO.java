@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomDTO {
+public class RoomDTO extends BaseDTO {
 
     private UUID roomId;
 
