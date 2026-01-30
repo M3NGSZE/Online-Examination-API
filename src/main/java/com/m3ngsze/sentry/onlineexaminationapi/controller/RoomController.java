@@ -122,7 +122,7 @@ public class RoomController {
         return ResponseEntity.ok(ApiResponse.<InviteCodeDTO>builder()
                 .message("Room successfully updated")
                 .payload(roomService.createInviteCode(roomId))
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .build());
     }
 
@@ -136,7 +136,7 @@ public class RoomController {
         return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
                 .message("Room successfully updated")
                 .payload(roomService.joinRoom(joinRoomRequest.getCode()))
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .build());
     }
 
@@ -146,10 +146,11 @@ public class RoomController {
             summary = "User role",
             description = "Use for join room by room code"
     )
-    public ResponseEntity<ApiResponse<RoomDTO>> leaveRoom(@PathVariable("room-id") UUID roomId) {
-        return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
+    public ResponseEntity<ApiResponse<Boolean>> leaveRoom(@PathVariable("room-id") UUID roomId) {
+        roomService.leaveRoom(roomId);
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                 .message("Room successfully updated")
-                .payload(null)
+                .payload(true)
                 .status(HttpStatus.OK)
                 .build());
     }

@@ -119,7 +119,7 @@ public class RoomServiceImpl implements RoomService {
 
         RoomDTO map = modelMapper.map(room, RoomDTO.class);
         map.setUserId(user.getUserId());
-        map.setRoomName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
+        map.setUserName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
 
         return map;
     }
@@ -148,7 +148,7 @@ public class RoomServiceImpl implements RoomService {
 
         RoomDTO map = modelMapper.map(room, RoomDTO.class);
         map.setUserId(room.getRoomOwners().getFirst().getUser().getUserId());
-        map.setRoomName(room.getRoomOwners().getFirst().getUser().getUserInfo().getFirstName() + " " + room.getRoomOwners().getFirst().getUser().getUserInfo().getLastName());
+        map.setUserName(room.getRoomOwners().getFirst().getUser().getUserInfo().getFirstName() + " " + room.getRoomOwners().getFirst().getUser().getUserInfo().getLastName());
 
         return map;
     }
@@ -175,35 +175,36 @@ public class RoomServiceImpl implements RoomService {
 
         RoomInviteCode inviteCode;
 
-        if (oldInviteCode == null){
-            RoomInviteCode newInviteCode = new RoomInviteCode();
-            newInviteCode.setRoom(room);
-            inviteCode = roomInviteCodeRepository.save(newInviteCode);
-        }else {
+        String plainCode = RoomCodeUtil.generate(6);
+        String hashedCode = RoomCodeUtil.hash(plainCode);
+
+        RoomInviteCode newInviteCode;
+
+        if (oldInviteCode != null) {
             oldInviteCode.setIsActivate(false);
             oldInviteCode.setRevokedAt(LocalDateTime.now());
 
-            if(oldInviteCode.getExpiresAt().isBefore(LocalDateTime.now()))
+            if (oldInviteCode.getExpiresAt().isBefore(LocalDateTime.now()))
                 oldInviteCode.setUpdatedAt(LocalDateTime.now());
 
             roomInviteCodeRepository.save(oldInviteCode);
 
-            String plainCode = RoomCodeUtil.generate(6);
-            String hashedCode = RoomCodeUtil.hash(plainCode);
-
-            RoomInviteCode newInviteCode = new RoomInviteCode();
-            newInviteCode.setRoom(room);
-            newInviteCode.setCodeHash(hashedCode);
-            newInviteCode.setExpiresAt(LocalDateTime.now().plusHours(24));
-
-            inviteCode = roomInviteCodeRepository.save(newInviteCode);
-
         }
+        newInviteCode = new RoomInviteCode();
+        newInviteCode.setRoom(room);
+        newInviteCode.setCodeHash(hashedCode);
+        newInviteCode.setExpiresAt(LocalDateTime.now().plusHours(24));
 
-        return modelMapper.map(inviteCode, InviteCodeDTO.class);
+        inviteCode = roomInviteCodeRepository.save(newInviteCode);
+
+        InviteCodeDTO map = modelMapper.map(inviteCode, InviteCodeDTO.class);
+        map.setCodeHash(plainCode);
+
+        return map;
     }
 
     @Override
+    @Transactional
     public RoomDTO joinRoom(String code) {
         User user = detailService.getCurrentUser();
 
@@ -220,12 +221,19 @@ public class RoomServiceImpl implements RoomService {
 
         RoomDTO map = modelMapper.map(room, RoomDTO.class);
         map.setUserId(user.getUserId());
+        map.setUserName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
 
         return map;
     }
 
     @Override
+    @Transactional
     public void leaveRoom(UUID roomId) {
+        User user = detailService.getCurrentUser();
 
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        enrollmentRepository.deleteByRoomAndUser(room, user);
     }
 }

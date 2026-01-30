@@ -17,7 +17,7 @@ public class RoomDTO extends BaseDTO {
 
     private UUID userId;
 
-    private String roomOwner;
+    private String userName;
 
     private String section;
 
