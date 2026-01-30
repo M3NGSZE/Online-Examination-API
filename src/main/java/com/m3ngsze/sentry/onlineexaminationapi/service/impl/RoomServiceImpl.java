@@ -262,12 +262,38 @@ public class RoomServiceImpl implements RoomService {
                 .and(isDeleted(false))
                 .and(enrolledBy(user));
 
+//        Pageable pageable = PageRequest.of(
+//                page - 1,
+//                size,
+//                Sort.by(sort, "createdAt")
+//        );
+//
+//
+//        Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)
+//                .map(room -> modelMapper.map(room, RoomDTO.class));
+
+        return getUserRoom(page, size, sort, spec);
+    }
+
+    @Override
+    public ListResponse<RoomDTO> getOwnUserRooms(Integer page, Integer size, String search, Sort.Direction sort) {
+        User user = detailService.getCurrentUser();
+
+        Specification<Room> spec = Specification
+                .where(search(search))
+                .and(isDeleted(false))
+                .and(ownBy(user));
+
+        return getUserRoom(page, size, sort, spec);
+    }
+
+    private ListResponse<RoomDTO> getUserRoom(Integer page, Integer size, Sort.Direction sort, Specification<Room> spec) {
+
         Pageable pageable = PageRequest.of(
                 page - 1,
                 size,
                 Sort.by(sort, "createdAt")
         );
-
 
         Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)
                 .map(room -> modelMapper.map(room, RoomDTO.class));

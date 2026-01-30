@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.specification;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Enrollment;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,6 +33,16 @@ public class RoomSpecification {
             if (user == null) return null;
 
             Join<Room, Enrollment> enrollment = root.join("enrollments");
+
+            return cb.equal(enrollment.get("user"), user);
+        });
+    }
+
+    public static Specification<Room> ownBy (User user) {
+        return ((root, query, cb) -> {
+            if (user == null) return null;
+
+            Join<Room, RoomOwner> enrollment = root.join("roomOwners");
 
             return cb.equal(enrollment.get("user"), user);
         });

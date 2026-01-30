@@ -30,4 +30,6 @@ public interface RoomService {
 
     ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort);
 
+    ListResponse<RoomDTO> getOwnUserRooms(Integer page, Integer size, String search, Sort.Direction sort);
+
 }

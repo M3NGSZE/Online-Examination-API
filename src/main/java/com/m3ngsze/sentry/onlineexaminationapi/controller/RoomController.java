@@ -172,8 +172,27 @@ public class RoomController {
             @RequestParam(defaultValue = "ASC") Sort.Direction sort
     ) {
         return ResponseEntity.ok(ApiResponse.<ListResponse<RoomDTO>>builder()
-                .message("Room successfully updated")
+                .message("User room successfully fetched")
                 .payload(roomService.getUserJoinedRooms(page, size, search, sort))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @GetMapping("/owner-room")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "Get all user own rooms",
+            description = "User use for get all own user rooms that have been created"
+    )
+    public ResponseEntity<ApiResponse<ListResponse<RoomDTO>>> getOwnUserRoom(
+            @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
+            @RequestParam(defaultValue = "3") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort
+    ) {
+        return ResponseEntity.ok(ApiResponse.<ListResponse<RoomDTO>>builder()
+                .message("Own user room successfully fetched")
+                .payload(roomService.getOwnUserRooms(page, size, search, sort))
                 .status(HttpStatus.OK)
                 .build());
     }
