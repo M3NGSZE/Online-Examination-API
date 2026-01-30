@@ -7,6 +7,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
@@ -14,13 +15,19 @@ import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomCodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecification.*;
 
 @Service
 @RequiredArgsConstructor
@@ -247,6 +254,28 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
-        return null;
+
+        User user = detailService.getCurrentUser();
+
+        Specification<Room> spec = Specification
+                .where(search(search))
+                .and(isDeleted(false))
+                .and(enrolledBy(user));
+
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(sort, "createdAt")
+        );
+
+
+        Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)
+                .map(room -> modelMapper.map(room, RoomDTO.class));
+
+        return ListResponse.<RoomDTO>builder()
+                .data(roompage.getContent())
+                .pagination(PaginationResponse.of(roompage.getTotalElements(), page, size))
+                .build();
     }
+
 }

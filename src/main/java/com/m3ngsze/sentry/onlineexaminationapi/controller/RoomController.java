@@ -162,8 +162,8 @@ public class RoomController {
     @GetMapping("/join-room")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "left from room",
-            description = "User use for leave examination room"
+            summary = "Get all user rooms",
+            description = "User use for get all own user join rooms"
     )
     public ResponseEntity<ApiResponse<ListResponse<RoomDTO>>> getUserJoinRoom(
             @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
@@ -173,7 +173,7 @@ public class RoomController {
     ) {
         return ResponseEntity.ok(ApiResponse.<ListResponse<RoomDTO>>builder()
                 .message("Room successfully updated")
-                .payload(null)
+                .payload(roomService.getUserJoinedRooms(page, size, search, sort))
                 .status(HttpStatus.OK)
                 .build());
     }
