@@ -4,15 +4,9 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomInviteCode;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomInviteCodeRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomOwnerRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
@@ -34,6 +28,7 @@ public class RoomServiceImpl implements RoomService {
     private final RoomOwnerRepository roomOwnerRepository;
     private final UserRepository userRepository;
     private final RoomInviteCodeRepository roomInviteCodeRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     private final DetailService detailService;
 
@@ -206,5 +201,31 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return modelMapper.map(inviteCode, InviteCodeDTO.class);
+    }
+
+    @Override
+    public RoomDTO joinRoom(String code) {
+        User user = detailService.getCurrentUser();
+
+        String hashCode = RoomCodeUtil.hash(code);
+
+        Room room = roomRepository.findRoomByRoomInviteCodes_CodeHash(hashCode)
+                .orElseThrow(() -> new NotFoundException("Room invite code not found"));
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setRoom(room);
+        enrollment.setUser(user);
+
+        enrollmentRepository.save(enrollment);
+
+        RoomDTO map = modelMapper.map(room, RoomDTO.class);
+        map.setUserId(user.getUserId());
+
+        return map;
+    }
+
+    @Override
+    public void leaveRoom(UUID roomId) {
+
     }
 }

@@ -15,4 +15,7 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
     List<Room> findByRoomNameIgnoreCaseAndRoomOwners_User(String roomName, User roomOwnersUser);
 
     Optional<Room> findByRoomIdAndIsDeletedFalseAndRoomOwners_User(UUID roomId, User roomOwners_user);
+
+    Optional<Room> findRoomByRoomInviteCodes_CodeHash(String roomInviteCodesCodeHash);
+
 }

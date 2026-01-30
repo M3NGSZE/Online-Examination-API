@@ -22,4 +22,8 @@ public interface RoomService {
 
     InviteCodeDTO createInviteCode(UUID roomId);
 
+    RoomDTO joinRoom(String code);
+
+    void leaveRoom(UUID roomId);
+
 }

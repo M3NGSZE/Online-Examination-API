@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.JoinRoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
@@ -121,6 +122,34 @@ public class RoomController {
         return ResponseEntity.ok(ApiResponse.<InviteCodeDTO>builder()
                 .message("Room successfully updated")
                 .payload(roomService.createInviteCode(roomId))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PostMapping("/join-room")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for join room by room code"
+    )
+    public ResponseEntity<ApiResponse<RoomDTO>> joinRoom(@RequestBody JoinRoomRequest joinRoomRequest) {
+        return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
+                .message("Room successfully updated")
+                .payload(roomService.joinRoom(joinRoomRequest.getCode()))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @DeleteMapping("/leave-room/{room-id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "User role",
+            description = "Use for join room by room code"
+    )
+    public ResponseEntity<ApiResponse<RoomDTO>> leaveRoom(@PathVariable("room-id") UUID roomId) {
+        return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
+                .message("Room successfully updated")
+                .payload(null)
                 .status(HttpStatus.OK)
                 .build());
     }
