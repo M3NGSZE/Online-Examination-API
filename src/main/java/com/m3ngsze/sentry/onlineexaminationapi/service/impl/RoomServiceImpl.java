@@ -6,6 +6,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
@@ -13,6 +14,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomCodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -216,6 +218,9 @@ public class RoomServiceImpl implements RoomService {
         if (room.getRoomOwners().getFirst().getUser().getUserId().equals(user.getUserId()))
             throw new NotFoundException("Join fail room owner");
 
+        if (enrollmentRepository.existsByRoomAndUser(room, user))
+            throw new NotFoundException("User already joined room");
+
         Enrollment enrollment = new Enrollment();
         enrollment.setRoom(room);
         enrollment.setUser(user);
@@ -238,5 +243,10 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new NotFoundException("Room not found"));
 
         enrollmentRepository.deleteByRoomAndUser(room, user);
+    }
+
+    @Override
+    public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
+        return null;
     }
 }

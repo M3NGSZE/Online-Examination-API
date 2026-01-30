@@ -99,7 +99,7 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
+            summary = "Deactivate account",
             description = "Use for deactivate user account for temporary"
     )
     public ResponseEntity<ApiResponse<Boolean>> deactivateAccount() {
@@ -112,7 +112,7 @@ public class UserController {
 
     @PatchMapping("/reactivate")
     @Operation(
-            summary = "User role",
+            summary = "reactivate account",
             description = "Use for reactivate user account back"
     )
     public ResponseEntity<ApiResponse<Boolean>> reactivateAccount(@RequestBody @Valid OtpRequest request) {
@@ -157,7 +157,7 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
+            summary = "Delete account",
             description = "User use for delete their account permanently"
     )
     public ResponseEntity<ApiResponse<Boolean>> deleteAccount() {

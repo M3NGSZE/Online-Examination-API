@@ -8,5 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
+
     void deleteByRoomAndUser(Room room, User user);
+
+    boolean existsByRoomAndUser(Room room, User user);
+
 }

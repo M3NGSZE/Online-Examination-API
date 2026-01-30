@@ -3,6 +3,8 @@ package com.m3ngsze.sentry.onlineexaminationapi.service;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import org.springframework.data.domain.Sort;
 
 import java.util.UUID;
 
@@ -25,5 +27,7 @@ public interface RoomService {
     RoomDTO joinRoom(String code);
 
     void leaveRoom(UUID roomId);
+
+    ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort);
 
 }

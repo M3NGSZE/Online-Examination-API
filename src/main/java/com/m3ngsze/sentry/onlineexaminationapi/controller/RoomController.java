@@ -5,11 +5,15 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.JoinRoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +33,7 @@ public class RoomController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
+            summary = "Create new room",
             description = "Use for create new room"
     )
     public ResponseEntity<ApiResponse<RoomDTO>> createRoom(@RequestBody RoomRequest roomRequest) {
@@ -43,7 +47,7 @@ public class RoomController {
     @PatchMapping("{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
+            summary = "Update one room",
             description = "Use for update own user room"
     )
     public ResponseEntity<ApiResponse<RoomDTO>> updateRoom(@PathVariable("room-id") UUID roomId, @RequestBody RoomRequest roomRequest) {
@@ -57,7 +61,7 @@ public class RoomController {
     @GetMapping("{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
+            summary = "Get one room",
             description = "Use for get own user room detail by id"
     )
     public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(@PathVariable("room-id") UUID roomId) {
@@ -71,8 +75,8 @@ public class RoomController {
     @DeleteMapping("{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
-            description = "Use for delete own user room"
+            summary = "Delete one room",
+            description = "User use for delete own user room"
     )
     public ResponseEntity<ApiResponse<Boolean>> deleteRoomById(@PathVariable("room-id") UUID roomId) {
         roomService.deleteRoomById(roomId);
@@ -115,12 +119,12 @@ public class RoomController {
     @PostMapping("/invitation-code/{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
-            description = "Use for create room invitation code for other user to join"
+            summary = "Create room code",
+            description = "User use for create room invitation code for other user to join"
     )
     public ResponseEntity<ApiResponse<InviteCodeDTO>> createInvitationCode(@PathVariable("room-id") UUID roomId) {
         return ResponseEntity.ok(ApiResponse.<InviteCodeDTO>builder()
-                .message("Room successfully updated")
+                .message("Room code successfully created")
                 .payload(roomService.createInviteCode(roomId))
                 .status(HttpStatus.CREATED)
                 .build());
@@ -129,12 +133,12 @@ public class RoomController {
     @PostMapping("/join-room")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
-            description = "Use for join room by room code"
+            summary = "Join new room",
+            description = "User use for join room by room code"
     )
     public ResponseEntity<ApiResponse<RoomDTO>> joinRoom(@RequestBody JoinRoomRequest joinRoomRequest) {
         return ResponseEntity.ok(ApiResponse.<RoomDTO>builder()
-                .message("Room successfully updated")
+                .message("User successfully join")
                 .payload(roomService.joinRoom(joinRoomRequest.getCode()))
                 .status(HttpStatus.CREATED)
                 .build());
@@ -143,14 +147,33 @@ public class RoomController {
     @DeleteMapping("/leave-room/{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "User role",
-            description = "Use for join room by room code"
+            summary = "left from room",
+            description = "User use for leave examination room"
     )
     public ResponseEntity<ApiResponse<Boolean>> leaveRoom(@PathVariable("room-id") UUID roomId) {
         roomService.leaveRoom(roomId);
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
-                .message("Room successfully updated")
+                .message("User successfully left the room")
                 .payload(true)
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @GetMapping("/join-room")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "left from room",
+            description = "User use for leave examination room"
+    )
+    public ResponseEntity<ApiResponse<ListResponse<RoomDTO>>> getUserJoinRoom(
+            @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
+            @RequestParam(defaultValue = "3") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort
+    ) {
+        return ResponseEntity.ok(ApiResponse.<ListResponse<RoomDTO>>builder()
+                .message("Room successfully updated")
+                .payload(null)
                 .status(HttpStatus.OK)
                 .build());
     }
