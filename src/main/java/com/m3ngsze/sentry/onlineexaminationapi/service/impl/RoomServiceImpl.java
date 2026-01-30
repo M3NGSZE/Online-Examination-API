@@ -213,6 +213,9 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findRoomByRoomInviteCodes_CodeHash(hashCode)
                 .orElseThrow(() -> new NotFoundException("Room invite code not found"));
 
+        if (room.getRoomOwners().getFirst().getUser().getUserId().equals(user.getUserId()))
+            throw new NotFoundException("Join fail room owner");
+
         Enrollment enrollment = new Enrollment();
         enrollment.setRoom(room);
         enrollment.setUser(user);
