@@ -1,12 +1,10 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,9 +13,11 @@ public class RoomDTO extends BaseDTO {
 
     private UUID roomId;
 
+    private String roomName;
+
     private UUID userId;
 
-    private String roomName;
+    private String roomOwner;
 
     private String section;
 

@@ -1,14 +1,12 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor

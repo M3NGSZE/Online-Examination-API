@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 
@@ -10,5 +11,15 @@ public interface RoomService {
     RoomDTO createRoom(RoomRequest roomRequest);
 
     RoomDTO updateRoom(UUID roomId, RoomRequest roomRequest);
+
+    RoomDTO findRoomById(UUID roomId);
+
+    void deleteRoomById(UUID roomId);
+
+    RoomDTO findRoomByIdAdmin(UUID roomId);
+
+    void deleteRoomByIdAdmin(UUID roomId);
+
+    InviteCodeDTO createInviteCode(UUID roomId);
 
 }

@@ -2,21 +2,27 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomInviteCode;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomInviteCodeRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomOwnerRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomCodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +32,8 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomOwnerRepository roomOwnerRepository;
+    private final UserRepository userRepository;
+    private final RoomInviteCodeRepository roomInviteCodeRepository;
 
     private final DetailService detailService;
 
@@ -89,8 +97,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
                 .orElseThrow(() -> new NotFoundException("Room not found"));
 
-        System.out.println("roomId: " + room.getRoomId());
-
         RoomRequest trim =  RoomRequestTrim(request);
 
         validateRoomRequest(trim, user);
@@ -103,6 +109,102 @@ public class RoomServiceImpl implements RoomService {
 
         Room save = roomRepository.save(room);
 
-        return modelMapper.map(save, RoomDTO.class);
+        RoomDTO map = modelMapper.map(save, RoomDTO.class);
+        map.setUserId(user.getUserId());
+
+        return map;
+    }
+
+    @Override
+    public RoomDTO findRoomById(UUID roomId) {
+        User user = detailService.getCurrentUser();
+
+        Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        RoomDTO map = modelMapper.map(room, RoomDTO.class);
+        map.setUserId(user.getUserId());
+        map.setRoomName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
+
+        return map;
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoomById(UUID roomId) {
+        User user = detailService.getCurrentUser();
+
+        Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        room.setIsDeleted(true);
+        room.setDeletedAt(LocalDateTime.now());
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
+    }
+
+    @Override
+    public RoomDTO findRoomByIdAdmin(UUID roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        userRepository.findById(room.getRoomOwners().getFirst().getUser().getUserId());
+
+        RoomDTO map = modelMapper.map(room, RoomDTO.class);
+        map.setUserId(room.getRoomOwners().getFirst().getUser().getUserId());
+        map.setRoomName(room.getRoomOwners().getFirst().getUser().getUserInfo().getFirstName() + " " + room.getRoomOwners().getFirst().getUser().getUserInfo().getLastName());
+
+        return map;
+    }
+
+    @Override
+    public void deleteRoomByIdAdmin(UUID roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        room.setIsDeleted(true);
+        room.setDeletedAt(LocalDateTime.now());
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
+    }
+
+    @Override
+    @Transactional
+    public InviteCodeDTO createInviteCode(UUID roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
+
+        RoomInviteCode oldInviteCode = roomInviteCodeRepository.findFirstByRoomOrderByUpdatedAtDesc(room);
+
+        RoomInviteCode inviteCode;
+
+        if (oldInviteCode == null){
+            RoomInviteCode newInviteCode = new RoomInviteCode();
+            newInviteCode.setRoom(room);
+            inviteCode = roomInviteCodeRepository.save(newInviteCode);
+        }else {
+            oldInviteCode.setIsActivate(false);
+            oldInviteCode.setRevokedAt(LocalDateTime.now());
+
+            if(oldInviteCode.getExpiresAt().isBefore(LocalDateTime.now()))
+                oldInviteCode.setUpdatedAt(LocalDateTime.now());
+
+            roomInviteCodeRepository.save(oldInviteCode);
+
+            String plainCode = RoomCodeUtil.generate(6);
+            String hashedCode = RoomCodeUtil.hash(plainCode);
+
+            RoomInviteCode newInviteCode = new RoomInviteCode();
+            newInviteCode.setRoom(room);
+            newInviteCode.setCodeHash(hashedCode);
+            newInviteCode.setExpiresAt(LocalDateTime.now().plusHours(24));
+
+            inviteCode = roomInviteCodeRepository.save(newInviteCode);
+
+        }
+
+        return modelMapper.map(inviteCode, InviteCodeDTO.class);
     }
 }
