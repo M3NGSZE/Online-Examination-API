@@ -21,4 +21,5 @@ public interface RoomRepository extends JpaRepository<Room, UUID>, JpaSpecificat
     Optional<Room> findByRoomIdAndIsDeletedFalseAndRoomOwners_User(UUID roomId, User roomOwners_user);
 
     Optional<Room> findRoomByRoomInviteCodes_CodeHash(String roomInviteCodesCodeHash);
+
 }
