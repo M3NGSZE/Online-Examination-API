@@ -63,8 +63,6 @@ public class RoomServiceImpl implements RoomService {
 
         RoomOwner save = roomOwnerRepository.save(owner);
 
-//        newRoom.setRoomOwners(List.of(owner));
-
         RoomDTO dto = modelMapper.map(newRoom, RoomDTO.class);
         dto.setUserId(save.getUser().getUserId());
 
@@ -85,7 +83,8 @@ public class RoomServiceImpl implements RoomService {
         request.setSection(request.getSection().trim());
         request.setSubject(request.getSubject().trim());
 
-        ConvertUtil.parseRoomLimit(request.getLimit().toString());
+        request.setLimit(ConvertUtil.parseRoomLimit(request.getLimit().toString()));
+
 
         if (request.getLimit() <= 0 || request.getLimit() > 100)
             throw new BadRequestException("Limit must be greater than 0 and less than 100");

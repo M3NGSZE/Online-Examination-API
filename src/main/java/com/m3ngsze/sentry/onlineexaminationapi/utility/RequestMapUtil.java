@@ -12,13 +12,15 @@ public class RequestMapUtil {
 
         request.setFirstName(ConvertUtil.toPascalCase(request.getFirstName().trim()));
         request.setLastName(ConvertUtil.toPascalCase(request.getLastName().trim()));
-        request.setPlaceOfBirth(request.getPlaceOfBirth().trim());
-        request.setPhoneNumber(request.getPhoneNumber().trim());
-        request.setProfileUrl(request.getProfileUrl().trim());
+        request.setPlaceOfBirth(request.getPlaceOfBirth() != null ? request.getPlaceOfBirth().trim() : null);
+        request.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
+        request.setProfileUrl(request.getProfileUrl() != null ? request.getProfileUrl().trim() : null);
 
-        long years = ChronoUnit.YEARS.between(request.getDateOfBirth(), LocalDate.now());
-        if (years < 13 || years > 100) {
-            throw new BadRequestException("Invalid date of birth");
+        if (request.getDateOfBirth() != null) {
+                long years = ChronoUnit.YEARS.between(request.getDateOfBirth(), LocalDate.now());
+                if (years < 13 || years > 100) {
+                        throw new BadRequestException("Invalid date of birth");
+                }
         }
         return request;
     }
