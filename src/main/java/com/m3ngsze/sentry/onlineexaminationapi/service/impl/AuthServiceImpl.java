@@ -106,19 +106,7 @@ public class AuthServiceImpl implements AuthService {
         // validate
         RegisterRequest trimRequest = validateRegisterRequest(request);
 
-        // 1. Save user as NOT VERIFIED
-        UserDTO userDTO = insertUser(trimRequest);
-
-        // 2. Generate OTP
-        String otp = otpGenerator.generateOtp();
-
-        // 3. Save OTP in Redis
-        redisService.saveOtp(userDTO.getEmail(), otp);
-
-        // 4. Send OTP
-        emailService.sendOtp(userDTO.getEmail(), otp);
-
-        return userDTO;
+        return insertUser(trimRequest);
     }
 
     private UserDTO insertUser(RegisterRequest request) {
