@@ -80,7 +80,6 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken.getRefreshToken())
                 .expiresIn(300L)
                 .role(userDetails.getAuthorities().iterator().next().getAuthority())
-                .profileUrl(user.getUserInfo().getProfileUrl())
                 .build();
     }
 
@@ -242,7 +241,6 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(tokenDTO.getRefreshToken())
                 .expiresIn(300L)
                 .role(user.getRole().getRoleName())
-                .profileUrl(user.getUserInfo().getProfileUrl())
                 .build();
     }
 

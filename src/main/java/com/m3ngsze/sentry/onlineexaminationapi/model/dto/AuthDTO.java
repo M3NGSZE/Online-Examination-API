@@ -15,6 +15,4 @@ public class AuthDTO {
 
     private String role;
 
-    private String profileUrl;
-
 }
