@@ -21,6 +21,8 @@ public class UserInfo extends BaseEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    private String gender;
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
