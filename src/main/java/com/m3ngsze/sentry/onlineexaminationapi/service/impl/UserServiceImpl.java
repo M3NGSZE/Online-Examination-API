@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = UtilMapper.toUserDTO(user);
         int age = LocalDateTime.now().getYear() - userDTO.getDateOfBirth().getYear();
         userDTO.setAge(age);
+        userDTO.setGender(user.getUserInfo().getGender());
 
         return userDTO;
     }

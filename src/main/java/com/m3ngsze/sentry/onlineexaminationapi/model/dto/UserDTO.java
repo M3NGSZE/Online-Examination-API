@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
 import lombok.*;
@@ -28,6 +29,7 @@ public class UserDTO extends BaseDTO {
 
     private Integer age;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
 
     private String placeOfBirth;

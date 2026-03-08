@@ -22,6 +22,8 @@ public class UserInfo extends BaseEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
     private Gender gender;
 
     @Column(name = "date_of_birth")
