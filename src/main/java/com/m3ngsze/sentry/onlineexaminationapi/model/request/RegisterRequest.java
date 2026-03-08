@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.request;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,6 +34,8 @@ public class RegisterRequest {
     @NotNull(message = "last name cannot be null")
     @NotBlank(message = "last name cannot be blank")
     private String lastName;
+
+    private Gender gender;
 
     private LocalDate dateOfBirth;
 

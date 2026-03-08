@@ -72,7 +72,11 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserProfile() {
         User user = detailService.getCurrentUser();
 
-        return UtilMapper.toUserDTO(user);
+        UserDTO userDTO = UtilMapper.toUserDTO(user);
+        int age = LocalDateTime.now().getYear() - userDTO.getDateOfBirth().getYear();
+        userDTO.setAge(age);
+
+        return userDTO;
     }
 
     @Override

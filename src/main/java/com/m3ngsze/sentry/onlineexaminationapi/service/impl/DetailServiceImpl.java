@@ -39,6 +39,8 @@ public class DetailServiceImpl implements DetailService {
             throw new NotFoundException("User not found");
         }
 
+        System.out.println("userGender: " + user.getUserInfo().getGender());
+
         return user;
     }
 

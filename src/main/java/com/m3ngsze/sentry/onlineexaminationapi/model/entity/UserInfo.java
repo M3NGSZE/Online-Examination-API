@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,7 +22,7 @@ public class UserInfo extends BaseEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    private String gender;
+    private Gender gender;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;

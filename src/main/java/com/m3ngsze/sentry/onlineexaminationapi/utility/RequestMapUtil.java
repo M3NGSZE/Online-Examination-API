@@ -12,6 +12,7 @@ public class RequestMapUtil {
 
         request.setFirstName(ConvertUtil.toPascalCase(request.getFirstName().trim()));
         request.setLastName(ConvertUtil.toPascalCase(request.getLastName().trim()));
+        request.setPlaceOfBirth(request.getGender() != null ? String.valueOf(request.getGender()) : null);
         request.setPlaceOfBirth(request.getPlaceOfBirth() != null ? request.getPlaceOfBirth().trim() : null);
         request.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
         request.setProfileUrl(request.getProfileUrl() != null ? request.getProfileUrl().trim() : null);

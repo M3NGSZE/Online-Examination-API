@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,10 @@ public class UserDTO extends BaseDTO {
     private String firstName;
 
     private String lastName;
+
+    private Gender gender;
+
+    private Integer age;
 
     private LocalDate dateOfBirth;
 
