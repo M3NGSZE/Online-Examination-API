@@ -4,6 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Enrollment;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -42,9 +43,23 @@ public class RoomSpecification {
         return ((root, query, cb) -> {
             if (user == null) return null;
 
-            Join<Room, RoomOwner> enrollment = root.join("roomOwners");
+            Join<Room, RoomOwner> owner = root.join("roomOwners");
 
-            return cb.equal(enrollment.get("user"), user);
+            return cb.equal(owner.get("user"), user);
+        });
+    }
+
+    public static Specification<Room> RoomType(User user, RoomType roomType) {
+        return ((root, query, cb) -> {
+            if (user == null || roomType == null) return null;
+
+            Join<Room, Enrollment> enrollment = root.join("enrollments");
+            Join<Room, RoomOwner> owner = root.join("roomOwners");
+
+            return cb.or(
+                    cb.equal(enrollment.get("user"), user),
+                    cb.equal(owner.get("user"), user)
+            );
         });
     }
 

@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.JoinRoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
@@ -175,7 +176,6 @@ public class RoomController {
                 .message("All rooms successfully fetched")
                 .payload(roomService.getAllRooms(page, size, search, sort))
                 .status(HttpStatus.OK)
-
                 .build());
     }
 
@@ -189,9 +189,15 @@ public class RoomController {
             @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
             @RequestParam(defaultValue = "3") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "ASC") Sort.Direction sort
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort,
+            @RequestParam(required = false) RoomType room
+
     ){
-        return null;
+        return ResponseEntity.ok(ApiResponse.<ListResponse<RoomDTO>>builder()
+                .message("All rooms successfully fetched")
+                .payload(roomService.getAllUserRooms(page, size, search, sort, room))
+                .status(HttpStatus.OK)
+                .build());
     }
 
 }
