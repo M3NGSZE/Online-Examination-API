@@ -6,6 +6,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RoomSpecification {
@@ -50,17 +51,24 @@ public class RoomSpecification {
     }
 
     public static Specification<Room> RoomType(User user, RoomType roomType) {
-        return ((root, query, cb) -> {
-            if (user == null || roomType == null) return null;
+        return (root, query, cb) -> {
 
-            Join<Room, Enrollment> enrollment = root.join("enrollments");
-            Join<Room, RoomOwner> owner = root.join("roomOwners");
+            if (user == null || roomType == null) {
+                return null;
+            }
 
-            return cb.or(
-                    cb.equal(enrollment.get("user"), user),
-                    cb.equal(owner.get("user"), user)
-            );
-        });
+            if (roomType == RoomType.ENROLL) {
+                Join<Room, Enrollment> enrollment = root.join("enrollments");
+                return cb.equal(enrollment.get("user"), user);
+            }
+
+            if (roomType == RoomType.OWN) {
+                Join<Room, RoomOwner> owner = root.join("roomOwners");
+                return cb.equal(owner.get("user"), user);
+            }
+
+            return null;
+        };
     }
 
 }
