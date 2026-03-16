@@ -28,10 +28,6 @@ public interface RoomService {
 
     void leaveRoom(UUID roomId);
 
-    ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort);
-
-    ListResponse<RoomDTO> getOwnUserRooms(Integer page, Integer size, String search, Sort.Direction sort);
-
     ListResponse<RoomDTO> getAllRooms(Integer page, Integer size, String search, Sort.Direction sort);
 
 }

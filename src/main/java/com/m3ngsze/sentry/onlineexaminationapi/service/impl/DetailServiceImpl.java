@@ -2,12 +2,23 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +30,9 @@ import org.springframework.stereotype.Service;
 public class DetailServiceImpl implements DetailService {
 
     private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+
+    private final ModelMapper modelMapper;
 
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
@@ -50,6 +64,23 @@ public class DetailServiceImpl implements DetailService {
         }
 
         return authHeader.substring(7);
+    }
+
+    @Override
+    public ListResponse<RoomDTO> getUserRoom(Integer page, Integer size, Sort.Direction sort, Specification<Room> spec) {
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(sort, "createdAt")
+        );
+
+        Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)
+                .map(room -> modelMapper.map(room, RoomDTO.class));
+
+        return ListResponse.<RoomDTO>builder()
+                .data(roompage.getContent())
+                .pagination(PaginationResponse.of(roompage.getTotalElements(), page, size))
+                .build();
     }
 
 }

@@ -37,15 +37,15 @@ public class Concept {
 //
 //        http.csrf(AbstractHttpConfigurer::disable)
 //                .authorizeHttpRequests(req -> req
-//                        // ✅ All auth endpoints bypass JWT automatically
+//                        //  All auth endpoints bypass JWT automatically
 //                        .requestMatchers("/api/v1/auths/**").permitAll()
-//                        // ✅ Swagger & API docs
+//                        //  Swagger & API docs
 //                        .requestMatchers(
 //                                "/v3/api-docs/**",
 //                                "/swagger-ui/**",
 //                                "/swagger-ui.html"
 //                        ).permitAll()
-//                        // ✅ Everything else needs authentication
+//                        //  Everything else needs authentication
 //                        .anyRequest().authenticated()
 //                )
 //                // Stateless session (JWT)
