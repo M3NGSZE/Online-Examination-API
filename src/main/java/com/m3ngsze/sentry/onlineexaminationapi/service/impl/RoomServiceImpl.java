@@ -265,6 +265,10 @@ public class RoomServiceImpl implements RoomService {
                 .and(isDeleted(false))
                 .and(RoomType(user, room));
 
+        ListResponse<RoomDTO> userRoom = detailService.getUserRoom(page, size, sort, spec);
+
+//        enrollmentRepository.cou
+
         return detailService.getUserRoom(page, size, sort, spec);
     }
 

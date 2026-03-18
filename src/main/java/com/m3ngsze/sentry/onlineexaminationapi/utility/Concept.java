@@ -67,4 +67,14 @@ public class Concept {
 //        if (years < 13 || years > 100) {
 //            throw new BadRequestException("Invalid date of birth");
 //        }
+
+//    if (roomType == null) {
+//        Join<Room, Enrollment> enrollment = root.join("enrollments", JoinType.LEFT);
+//        Join<Room, RoomOwner> owner = root.join("roomOwners", JoinType.LEFT);
+//
+//        return cb.or(
+//                cb.equal(enrollment.get("user"), user),
+//                cb.equal(owner.get("user"), user)
+//        );
+//    }
 }

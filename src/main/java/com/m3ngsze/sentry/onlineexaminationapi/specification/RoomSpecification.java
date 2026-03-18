@@ -5,8 +5,10 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.RoomOwner;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RoomSpecification {
@@ -52,21 +54,31 @@ public class RoomSpecification {
 
     public static Specification<Room> RoomType(User user, RoomType roomType) {
         return (root, query, cb) -> {
-
-            if (user == null || roomType == null) {
+            System.out.println("hello1");
+            if (user == null) {
                 return null;
+            }
+            System.out.println("hello2");
+
+            if (roomType == null) {
+                Join<Room, Enrollment> enrollment = root.join("enrollments", JoinType.LEFT);
+                Join<Room, RoomOwner> owner = root.join("roomOwners", JoinType.LEFT);
+                return cb.or(
+                        cb.equal(enrollment.get("user"), user),
+                        cb.equal(owner.get("user"), user)
+                );
             }
 
             if (roomType == RoomType.ENROLL) {
                 Join<Room, Enrollment> enrollment = root.join("enrollments");
                 return cb.equal(enrollment.get("user"), user);
             }
-
+            System.out.println("hello3");
             if (roomType == RoomType.OWN) {
                 Join<Room, RoomOwner> owner = root.join("roomOwners");
                 return cb.equal(owner.get("user"), user);
             }
-
+            System.out.println("hello4");
             return null;
         };
     }

@@ -23,6 +23,8 @@ public class RoomDTO extends BaseDTO {
 
     private String subject;
 
+    private Integer student;
+
     private Integer limit;
 
     private Boolean isDeleted;
