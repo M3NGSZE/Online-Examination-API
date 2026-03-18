@@ -21,6 +21,6 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
     DELETE FROM user_sessions us
         WHERE us.user_id = :userId
     """, nativeQuery = true)
-    void deleteByUser_UserId( @Param("userId")UUID userId);
+    void deleteByUser_UserId(@Param("userId") UUID userId);
 
 }

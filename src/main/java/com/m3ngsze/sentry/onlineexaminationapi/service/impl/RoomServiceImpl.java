@@ -6,13 +6,14 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
+import com.m3ngsze.sentry.onlineexaminationapi.model.query.EnrollCount;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
 import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomCodeUtil;
+import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -22,9 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecification.*;
+import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -122,11 +126,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
                 .orElseThrow(() -> new NotFoundException("Room not found"));
 
-        RoomDTO map = modelMapper.map(room, RoomDTO.class);
-        map.setUserId(user.getUserId());
-        map.setUserName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
-
-        return map;
+        return getRoomDTO(room, modelMapper);
     }
 
     @Override
@@ -151,11 +151,7 @@ public class RoomServiceImpl implements RoomService {
 
         userRepository.findById(room.getRoomOwners().getFirst().getUser().getUserId());
 
-        RoomDTO map = modelMapper.map(room, RoomDTO.class);
-        map.setUserId(room.getRoomOwners().getFirst().getUser().getUserId());
-        map.setUserName(room.getRoomOwners().getFirst().getUser().getUserInfo().getFirstName() + " " + room.getRoomOwners().getFirst().getUser().getUserInfo().getLastName());
-
-        return map;
+        return getRoomDTO(room, modelMapper);
     }
 
     @Override
@@ -180,8 +176,8 @@ public class RoomServiceImpl implements RoomService {
 
         RoomInviteCode inviteCode;
 
-        String plainCode = RoomCodeUtil.generate(6);
-        String hashedCode = RoomCodeUtil.hash(plainCode);
+        String plainCode = RoomUtil.generate(6);
+        String hashedCode = RoomUtil.hash(plainCode);
 
         RoomInviteCode newInviteCode;
 
@@ -213,7 +209,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomDTO joinRoom(String code) {
         User user = detailService.getCurrentUser();
 
-        String hashCode = RoomCodeUtil.hash(code);
+        String hashCode = RoomUtil.hash(code);
 
         Room room = roomRepository.findRoomByRoomInviteCodes_CodeHash(hashCode)
                 .orElseThrow(() -> new NotFoundException("Room invite code not found"));
@@ -232,7 +228,8 @@ public class RoomServiceImpl implements RoomService {
 
         RoomDTO map = modelMapper.map(room, RoomDTO.class);
         map.setUserId(user.getUserId());
-        map.setUserName(user.getUserInfo().getFirstName() + " " + user.getUserInfo().getLastName());
+        map.setFirstName(user.getUserInfo().getFirstName());
+        map.setLastname(user.getUserInfo().getLastName());
 
         return map;
     }
@@ -267,9 +264,19 @@ public class RoomServiceImpl implements RoomService {
 
         ListResponse<RoomDTO> userRoom = detailService.getUserRoom(page, size, sort, spec);
 
-//        enrollmentRepository.cou
+        List<EnrollCount> enrollCount = enrollmentRepository.countUserEnrollRoomOwner(user.getUserId());
 
-        return detailService.getUserRoom(page, size, sort, spec);
+        Map<UUID, Long> countMap = enrollCount.stream()
+                .collect(Collectors.toMap(
+                        EnrollCount::getRoomId,
+                        EnrollCount::getEnrollmentCount
+                ));
+
+        userRoom.getData().forEach(roomDto ->
+                roomDto.setStudent(countMap.getOrDefault(roomDto.getRoomId(), 0L).intValue())
+        );
+
+        return userRoom;
     }
 
 }

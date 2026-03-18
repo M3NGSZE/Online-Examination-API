@@ -25,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDTO;
+
 @Service
 @RequiredArgsConstructor
 public class DetailServiceImpl implements DetailService {
@@ -75,12 +77,14 @@ public class DetailServiceImpl implements DetailService {
         );
 
         Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)
-                .map(room -> modelMapper.map(room, RoomDTO.class));
+                .map(room -> getRoomDTO(room, modelMapper));
 
         return ListResponse.<RoomDTO>builder()
                 .data(roompage.getContent())
                 .pagination(PaginationResponse.of(roompage.getTotalElements(), page, size))
                 .build();
     }
+
+
 
 }

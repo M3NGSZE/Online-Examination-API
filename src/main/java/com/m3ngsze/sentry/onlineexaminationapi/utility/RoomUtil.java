@@ -1,10 +1,14 @@
 package com.m3ngsze.sentry.onlineexaminationapi.utility;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
+import org.modelmapper.ModelMapper;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
-public class RoomCodeUtil {
+public class RoomUtil {
 
     private static final String CHARSET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -34,6 +38,14 @@ public class RoomCodeUtil {
         } catch (Exception e) {
             throw new RuntimeException("Failed to hash room code", e);
         }
+    }
+
+    public static RoomDTO getRoomDTO(Room room, ModelMapper modelMapper) {
+        RoomDTO map = modelMapper.map(room, RoomDTO.class);
+        map.setUserId(room.getRoomOwners().getFirst().getUser().getUserId());
+        map.setFirstName(room.getRoomOwners().getFirst().getUser().getUserInfo().getFirstName());
+        map.setLastname(room.getRoomOwners().getFirst().getUser().getUserInfo().getLastName());
+        return map;
     }
 
 }
