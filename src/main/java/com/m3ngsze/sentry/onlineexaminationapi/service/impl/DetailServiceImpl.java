@@ -73,7 +73,7 @@ public class DetailServiceImpl implements DetailService {
         Pageable pageable = PageRequest.of(
                 page - 1,
                 size,
-                Sort.by(sort, "createdAt")
+                Sort.by(sort, "updatedAt")
         );
 
         Page<RoomDTO> roompage = roomRepository.findAll(spec, pageable)

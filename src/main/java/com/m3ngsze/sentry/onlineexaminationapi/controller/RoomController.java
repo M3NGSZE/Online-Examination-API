@@ -189,7 +189,7 @@ public class RoomController {
             @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
             @RequestParam(defaultValue = "3") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "ASC") Sort.Direction sort,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sort,
             @RequestParam(required = false) RoomType room
 
     ){
