@@ -17,6 +17,7 @@ import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecific
 @RequiredArgsConstructor
 public class ReserveServiceImpl implements ReserveService {
 
+
     private final DetailService detailService;
 
     @Override
