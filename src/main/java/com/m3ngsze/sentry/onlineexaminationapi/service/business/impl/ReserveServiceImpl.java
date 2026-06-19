@@ -1,11 +1,11 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.ReserveService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.DetailService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;

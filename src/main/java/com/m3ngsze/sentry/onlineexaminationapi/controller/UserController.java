@@ -7,7 +7,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.ResetPasswordReques
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.UserInfoRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.UserService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

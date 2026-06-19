@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;

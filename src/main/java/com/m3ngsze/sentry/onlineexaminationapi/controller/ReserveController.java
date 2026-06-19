@@ -3,7 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.ReserveService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

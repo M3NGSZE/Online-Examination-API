@@ -5,7 +5,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.TokenService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;

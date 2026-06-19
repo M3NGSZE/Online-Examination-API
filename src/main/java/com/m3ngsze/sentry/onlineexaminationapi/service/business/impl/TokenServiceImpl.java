@@ -1,11 +1,11 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserSession;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.TokenService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.TokenService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

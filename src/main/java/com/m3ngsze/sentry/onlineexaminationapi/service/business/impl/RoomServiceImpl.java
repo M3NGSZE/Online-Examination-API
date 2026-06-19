@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
@@ -10,8 +10,8 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.query.EnrollCount;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
-import com.m3ngsze.sentry.onlineexaminationapi.service.DetailService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.RoomService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.DetailService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.AuthService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

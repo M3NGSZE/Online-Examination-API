@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service;
+package com.m3ngsze.sentry.onlineexaminationapi.service.component;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;

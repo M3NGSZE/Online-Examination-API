@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
@@ -17,7 +17,8 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.request.*;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.*;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.*;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.DetailService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

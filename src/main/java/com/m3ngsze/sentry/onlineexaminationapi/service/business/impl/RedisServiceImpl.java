@@ -1,6 +1,6 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
-import com.m3ngsze.sentry.onlineexaminationapi.service.RedisService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
