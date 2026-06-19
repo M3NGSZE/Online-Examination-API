@@ -4,6 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.RoomCbc;
 import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecific
 @RequiredArgsConstructor
 public class ReserveServiceImpl implements ReserveService {
 
-
     private final UserCbc userCbc;
+    private final RoomCbc roomCbc;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
@@ -29,7 +30,7 @@ public class ReserveServiceImpl implements ReserveService {
                 .and(isDeleted(false))
                 .and(enrolledBy(user));
 
-        return userCbc.getUserRoom(page, size, sort, spec);
+        return roomCbc.getUserRoom(page, size, sort, spec);
     }
 
     @Override
@@ -41,6 +42,6 @@ public class ReserveServiceImpl implements ReserveService {
                 .and(isDeleted(false))
                 .and(ownBy(user));
 
-        return userCbc.getUserRoom(page, size, sort, spec);
+        return roomCbc.getUserRoom(page, size, sort, spec);
     }
 }
