@@ -10,6 +10,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.query.EnrollCount;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.RoomCbc;
 import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
@@ -41,6 +42,7 @@ public class RoomServiceImpl implements RoomService {
     private final EnrollmentRepository enrollmentRepository;
 
     private final UserCbc userCbc;
+    private final RoomCbc roomCbc;
 
     private final ModelMapper modelMapper;
 
@@ -250,7 +252,7 @@ public class RoomServiceImpl implements RoomService {
         Specification<Room> spec = Specification
                 .where(search(search));
 
-        return userCbc.getUserRoom(page, size, sort, spec);
+        return roomCbc.getUserRoom(page, size, sort, spec);
     }
 
     @Override
@@ -262,7 +264,7 @@ public class RoomServiceImpl implements RoomService {
                 .and(isDeleted(false))
                 .and(RoomType(user, room));
 
-        ListResponse<RoomDTO> userRoom = userCbc.getUserRoom(page, size, sort, spec);
+        ListResponse<RoomDTO> userRoom = roomCbc.getUserRoom(page, size, sort, spec);
 
         List<EnrollCount> enrollCount = enrollmentRepository.countUserEnrollRoomOwner(user.getUserId());
 
