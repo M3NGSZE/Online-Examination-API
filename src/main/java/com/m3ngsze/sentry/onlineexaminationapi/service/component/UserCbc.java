@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface DetailService extends UserDetailsService {
+public interface UserCbc extends UserDetailsService {
 
     User getCurrentUser();
 

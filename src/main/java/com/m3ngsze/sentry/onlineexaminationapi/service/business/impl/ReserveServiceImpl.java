@@ -4,7 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.component.DetailService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -18,29 +18,29 @@ import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecific
 public class ReserveServiceImpl implements ReserveService {
 
 
-    private final DetailService detailService;
+    private final UserCbc userCbc;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
-        User user = detailService.getCurrentUser();
+        User user = userCbc.getCurrentUser();
 
         Specification<Room> spec = Specification
                 .where(search(search))
                 .and(isDeleted(false))
                 .and(enrolledBy(user));
 
-        return detailService.getUserRoom(page, size, sort, spec);
+        return userCbc.getUserRoom(page, size, sort, spec);
     }
 
     @Override
     public ListResponse<RoomDTO> getOwnUserRooms(Integer page, Integer size, String search, Sort.Direction sort) {
-        User user = detailService.getCurrentUser();
+        User user = userCbc.getCurrentUser();
 
         Specification<Room> spec = Specification
                 .where(search(search))
                 .and(isDeleted(false))
                 .and(ownBy(user));
 
-        return detailService.getUserRoom(page, size, sort, spec);
+        return userCbc.getUserRoom(page, size, sort, spec);
     }
 }

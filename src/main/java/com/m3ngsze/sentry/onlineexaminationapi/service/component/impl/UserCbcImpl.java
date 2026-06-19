@@ -9,7 +9,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.component.DetailService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDT
 
 @Service
 @RequiredArgsConstructor
-public class DetailServiceImpl implements DetailService {
+public class UserCbcImpl implements UserCbc {
 
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
