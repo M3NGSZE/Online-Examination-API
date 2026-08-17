@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/teacher")
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Room Controller", description = "Handle creating new assignment for student and manage students")
+@Tag(name = "Teacher Controller", description = "Handle creating new assignment for student and manage students")
 @RequiredArgsConstructor
 public class TeacherController {
 
     private final TeacherService teacherService;
 
-    @GetMapping
+    @GetMapping("/students/{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
             summary = "Retrieve all student by room id",
