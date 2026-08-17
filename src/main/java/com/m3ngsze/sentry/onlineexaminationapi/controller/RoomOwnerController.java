@@ -2,7 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.service.business.TeacherService;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,25 +19,24 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/teacher")
+@RequestMapping("api/v1/room-owner")
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Teacher Controller", description = "Handle creating new assignment for student and manage students")
+@Tag(name = "Room Owner Controller", description = "Handle creating new assignment for enrollment and manage enrollments")
 @RequiredArgsConstructor
-public class TeacherController {
+public class RoomOwnerController {
 
-    private final TeacherService teacherService;
+    private final RoomOwnerService roomOwnerService;
 
-    @GetMapping("/students/{room-id}")
+    @GetMapping("/enrollment/{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "Retrieve all student by room id",
-            description = "Teacher use for retrieve all students include both join room and own room"
+            summary = "Retrieve all enrollments by room id",
+            description = "Room Owner use for retrieve all enrollments join room"
     )
     public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveStudentsByRoomId(@PathVariable("room-id") UUID roomId ) {
-
         return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
                 .message("User successfully deleted")
-                .payload(teacherService.retrieveStudentsByRoomId(roomId))
+                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId))
                 .status(HttpStatus.OK)
                 .build());
     }
