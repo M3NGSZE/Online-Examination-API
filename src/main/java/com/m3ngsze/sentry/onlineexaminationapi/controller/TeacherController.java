@@ -11,8 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/teacher")
@@ -29,11 +33,11 @@ public class TeacherController {
             summary = "Retrieve all student by room id",
             description = "Teacher use for retrieve all students include both join room and own room"
     )
-    public ResponseEntity<ApiResponse<UserDTO>> retrieveStudentsByRoomId() {
+    public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveStudentsByRoomId(@PathVariable("room-id") UUID roomId ) {
 
-        return ResponseEntity.ok(ApiResponse.<UserDTO>builder()
+        return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
                 .message("User successfully deleted")
-                .payload(null)
+                .payload(teacherService.retrieveStudentsByRoomId(roomId))
                 .status(HttpStatus.OK)
                 .build());
     }
