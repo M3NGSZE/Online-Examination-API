@@ -40,4 +40,18 @@ public class RoomOwnerController {
                 .status(HttpStatus.OK)
                 .build());
     }
+
+    @GetMapping("/{room-id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(
+            summary = "Retrieve all room owners by room id",
+            description = "Room Owner use for retrieve all room owner join room"
+    )
+    public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveRoomOwnersByRoomId(@PathVariable("room-id") UUID roomId ) {
+        return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
+                .message("User successfully deleted")
+                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId))
+                .status(HttpStatus.OK)
+                .build());
+    }
 }
