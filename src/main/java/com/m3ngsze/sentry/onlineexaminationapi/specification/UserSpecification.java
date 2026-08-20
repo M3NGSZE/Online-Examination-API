@@ -1,10 +1,14 @@
 package com.m3ngsze.sentry.onlineexaminationapi.specification;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Enrollment;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.UUID;
 
 public class UserSpecification {
 
@@ -37,4 +41,19 @@ public class UserSpecification {
         };
     }
 
+    public static Specification<User> enrolledInRoom(UUID roomId) {
+        return (root, query, cb) -> {
+
+            Join<User, Enrollment> enrollment =
+                    root.join("enrollments");
+
+            Join<Enrollment, Room> room =
+                    enrollment.join("room");
+
+            return cb.equal(
+                    room.get("roomId"),
+                    roomId
+            );
+        };
+    }
 }

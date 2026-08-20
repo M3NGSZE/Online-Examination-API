@@ -1,19 +1,21 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,12 +35,19 @@ public class RoomOwnerController {
             summary = "Retrieve all enrollments by room id",
             description = "Room Owner use for retrieve all enrollments join room"
     )
-    public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveStudentsByRoomId(@PathVariable("room-id") UUID roomId ) {
-        return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
+    public ResponseEntity<ApiResponse<ListResponse<UserDTO>>> retrieveStudentsByRoomId(
+            @PathVariable("room-id") UUID roomId ,
+            @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
+            @RequestParam(defaultValue = "20") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sort
+    ) {
+        return ResponseEntity.ok( ApiResponse.<ListResponse<UserDTO>>builder()
                 .message("User successfully deleted")
-                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId))
+                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId, page, size, search, sort))
                 .status(HttpStatus.OK)
-                .build());
+                .build()
+        );
     }
 
     @GetMapping("/{room-id}")
@@ -50,7 +59,7 @@ public class RoomOwnerController {
     public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveRoomOwnersByRoomId(@PathVariable("room-id") UUID roomId ) {
         return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
                 .message("User successfully deleted")
-                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId))
+                .payload( null )
                 .status(HttpStatus.OK)
                 .build());
     }
