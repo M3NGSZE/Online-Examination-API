@@ -1,11 +1,12 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.component.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.support.impl;
 
+import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.component.RoomCbc;
+import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -15,11 +16,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDTO;
 
 @Service
 @RequiredArgsConstructor
-public class RoomCbcImpl implements RoomCbc {
+public class RoomSupportImpl implements RoomSupport {
 
     private final RoomRepository roomRepository;
 
@@ -40,6 +43,12 @@ public class RoomCbcImpl implements RoomCbc {
                 .data(roompage.getContent())
                 .pagination(PaginationResponse.of(roompage.getTotalElements(), page, size))
                 .build();
+    }
+
+    @Override
+    public Room retrieveRoomById( UUID roomId ) {
+        return roomRepository.findById( roomId )
+                .orElseThrow(() -> new NotFoundException( "Room not found" ) );
     }
 
 }

@@ -1,9 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.specification;
 
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Enrollment;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
-import com.m3ngsze.sentry.onlineexaminationapi.model.entity.UserInfo;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,7 +29,7 @@ public class UserSpecification {
             String like = "%" + keyword.toLowerCase() + "%";
 
             // JOIN User -> UserInfo
-            Join<User, UserInfo> userInfoJoin = root.join("userInfo", JoinType.LEFT);
+            Join<User, UserInfo> userInfoJoin = root.join("userInfo", JoinType.LEFT );
 
             return cb.or(
 //                    cb.like(cb.lower(root.get("email")), like),
@@ -41,19 +39,44 @@ public class UserSpecification {
         };
     }
 
-    public static Specification<User> enrolledInRoom(UUID roomId) {
+    public static Specification<User> enrolledInRoom( UUID roomId ) {
         return (root, query, cb) -> {
 
-            Join<User, Enrollment> enrollment =
-                    root.join("enrollments");
+            Join<User, Enrollment> enrollment = root.join("enrollments");
 
-            Join<Enrollment, Room> room =
-                    enrollment.join("room");
+            Join<Enrollment, Room> room = enrollment.join("room");
 
             return cb.equal(
                     room.get("roomId"),
                     roomId
             );
+        };
+    }
+
+    public static Specification<User> type( Room room, RoomType roomType ) {
+        return (root, query, cb ) -> {
+            if ( room == null ) return null;
+
+            if ( roomType == null ) {
+                Join< User, Enrollment > enrollment = root.join( "enrollments", JoinType.LEFT );
+                Join< User, RoomOwner> owner = root.join( "roomOwners", JoinType.LEFT );
+                return cb.or(
+                        cb.equal(enrollment.get("room"), room),
+                        cb.equal(owner.get("room"), room)
+                );
+            }
+
+            if ( roomType == RoomType.ENROLL ) {
+                Join< User, Enrollment > enroll = root.join( "enrollments" );
+                return cb.equal( enroll.get( "room" ), room );
+            }
+
+            if ( roomType == RoomType.OWN ) {
+                Join< User, RoomOwner> owner = root.join( "roomOwners" );
+                return cb.equal( owner.get( "room" ), room );
+            }
+
+            return null;
         };
     }
 }

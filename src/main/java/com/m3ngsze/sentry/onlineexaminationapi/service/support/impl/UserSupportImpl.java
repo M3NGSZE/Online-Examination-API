@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.component.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.support.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
@@ -9,7 +9,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
+import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDT
 
 @Service
 @RequiredArgsConstructor
-public class UserCbcImpl implements UserCbc {
+public class UserSupportImpl implements UserSupport {
 
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;

@@ -35,32 +35,20 @@ public class RoomOwnerController {
             summary = "Retrieve all enrollments by room id",
             description = "Room Owner use for retrieve all enrollments join room"
     )
-    public ResponseEntity<ApiResponse<ListResponse<UserDTO>>> retrieveStudentsByRoomId(
-            @PathVariable("room-id") UUID roomId ,
-            @RequestParam(defaultValue = "1") @Positive @Min(value = 1, message = "must greater than 0") Integer page,
-            @RequestParam(defaultValue = "20") @Positive @Min(value = 1, message = "must greater than 0") Integer size,
-            @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "DESC") Sort.Direction sort
+    public ResponseEntity<ApiResponse< ListResponse< UserDTO >>> retrieveStudentsByRoomId(
+            @PathVariable( "room-id" ) UUID roomId ,
+            @RequestParam( defaultValue = "1" ) @Positive @Min(value = 1, message = "must greater than 0") Integer page,
+            @RequestParam( defaultValue = "20" ) @Positive @Min(value = 1, message = "must greater than 0") Integer size,
+            @RequestParam( required = false ) String search,
+            @RequestParam( defaultValue = "DESC" ) Sort.Direction sort,
+            @RequestParam( defaultValue = "ENROLL" ) RoomType roomType
     ) {
         return ResponseEntity.ok( ApiResponse.<ListResponse<UserDTO>>builder()
-                .message("User successfully deleted")
-                .payload(roomOwnerService.retrieveEnrollmentsByRoomId(roomId, page, size, search, sort))
-                .status(HttpStatus.OK)
+                .message( "User successfully deleted" )
+                .payload( roomOwnerService.retrieveEnrollmentsByRoomId( roomId, page, size, search, sort, roomType ) )
+                .status( HttpStatus.OK )
                 .build()
         );
     }
 
-    @GetMapping("/{room-id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @Operation(
-            summary = "Retrieve all room owners by room id",
-            description = "Room Owner use for retrieve all room owner join room"
-    )
-    public ResponseEntity<ApiResponse<List<UserDTO>>> retrieveRoomOwnersByRoomId(@PathVariable("room-id") UUID roomId ) {
-        return ResponseEntity.ok(ApiResponse.<List<UserDTO>>builder()
-                .message("User successfully deleted")
-                .payload( null )
-                .status(HttpStatus.OK)
-                .build());
-    }
 }

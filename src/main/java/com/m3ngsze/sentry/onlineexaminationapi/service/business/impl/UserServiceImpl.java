@@ -17,7 +17,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserInfoRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.component.UserCbc;
+import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RedisService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.TokenService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.UserService;
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    private final UserCbc userCbc;
+    private final UserSupport userSupport;
     private final RedisService redisService;
     private final TokenService tokenService;
 
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserProfile() {
-        User user = userCbc.getCurrentUser();
+        User user = userSupport.getCurrentUser();
 
         UserDTO userDTO = UtilMapper.toUserDTO(user);
         int age = LocalDateTime.now().getYear() - userDTO.getDateOfBirth().getYear();
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public AuthDTO resetPassword(ResetPasswordRequest request) {
-        User user = userCbc.getCurrentUser();
+        User user = userSupport.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
             throw new BadCredentialsException("Incorrect password");
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean deactivateAccount() {
-        User user = userCbc.getCurrentUser();
+        User user = userSupport.getCurrentUser();
 
         deactivate(user);
 
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
         if (!isValid)
             throw new OtpException("Invalid or expired OTP");
 
-        UserDetails userDetails = userCbc.loadUserByUsername(request.getEmail());
+        UserDetails userDetails = userSupport.loadUserByUsername(request.getEmail());
         User user = (User) userDetails;
 
         reactivate(user);
@@ -210,7 +210,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteCurrentUser() {
-        User user = userCbc.getCurrentUser();
+        User user = userSupport.getCurrentUser();
 
         delete(user);
     }
@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserInfoRequest request) {
-        User user = userCbc.getCurrentUser();
+        User user = userSupport.getCurrentUser();
 
         UserInfo userInfo = userInfoRepository.findByUser(user)
                 .orElseThrow(() -> new NotFoundException("User info not found"));
