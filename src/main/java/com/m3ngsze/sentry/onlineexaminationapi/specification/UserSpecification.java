@@ -39,21 +39,7 @@ public class UserSpecification {
         };
     }
 
-    public static Specification<User> enrolledInRoom( UUID roomId ) {
-        return (root, query, cb) -> {
-
-            Join<User, Enrollment> enrollment = root.join("enrollments");
-
-            Join<Enrollment, Room> room = enrollment.join("room");
-
-            return cb.equal(
-                    room.get("roomId"),
-                    roomId
-            );
-        };
-    }
-
-    public static Specification<User> type( Room room, RoomType roomType ) {
+    public static Specification<User> enrolledInRoom( Room room, RoomType roomType ) {
         return (root, query, cb ) -> {
             if ( room == null ) return null;
 
@@ -61,8 +47,8 @@ public class UserSpecification {
                 Join< User, Enrollment > enrollment = root.join( "enrollments", JoinType.LEFT );
                 Join< User, RoomOwner> owner = root.join( "roomOwners", JoinType.LEFT );
                 return cb.or(
-                        cb.equal(enrollment.get("room"), room),
-                        cb.equal(owner.get("room"), room)
+                        cb.equal(enrollment.get( "room" ), room ),
+                        cb.equal(owner.get( "room" ), room )
                 );
             }
 

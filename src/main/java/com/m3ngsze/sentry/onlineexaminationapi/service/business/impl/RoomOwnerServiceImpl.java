@@ -45,9 +45,8 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
         Room room = roomSupport.retrieveRoomById( roomId );
 
         Specification<User> spec = Specification
-                .where( enrolledInRoom ( roomId ) )
-                .and( search( search ) )
-                .and( type( room,  roomType) );
+                .where( enrolledInRoom ( room, roomType ) )
+                .and( search( search ) );
 
         Page<UserProfileDTO> mapUsers1 = userRepository
                 .findAll( spec, pageable )
