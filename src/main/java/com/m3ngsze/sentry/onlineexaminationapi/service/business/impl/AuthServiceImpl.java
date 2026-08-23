@@ -4,6 +4,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.OtpException;
 import com.m3ngsze.sentry.onlineexaminationapi.jwt.JwtService;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.AuthDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.TokenDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
@@ -138,7 +139,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserInfoRequest toUserInfoRequest = modelMapper.map(request, UserInfoRequest.class);
 
-        UserInfoRequest userInfoRequest = RequestMapUtil.validateRegisterRequest(toUserInfoRequest);
+        UserInfoRequest userInfoRequest = UserMapper.validateRegisterRequest(toUserInfoRequest);
 
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         request.setFirstName(userInfoRequest.getFirstName());

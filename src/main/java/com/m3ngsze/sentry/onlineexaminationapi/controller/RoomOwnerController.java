@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserProfileDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
@@ -29,21 +30,21 @@ public class RoomOwnerController {
 
     private final RoomOwnerService roomOwnerService;
 
-    @GetMapping("/enrollment/{room-id}")
+    @GetMapping("/{room-id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(
-            summary = "Retrieve all enrollments by room id",
-            description = "Room Owner use for retrieve all enrollments join room"
+            summary = "Retrieve all users by room id",
+            description = "Room Owner use for retrieve all users join room (room-owner & enrollment)"
     )
-    public ResponseEntity<ApiResponse< ListResponse< UserDTO >>> retrieveStudentsByRoomId(
+    public ResponseEntity<ApiResponse< ListResponse< UserProfileDTO >>> retrieveStudentsByRoomId(
             @PathVariable( "room-id" ) UUID roomId ,
             @RequestParam( defaultValue = "1" ) @Positive @Min(value = 1, message = "must greater than 0") Integer page,
             @RequestParam( defaultValue = "20" ) @Positive @Min(value = 1, message = "must greater than 0") Integer size,
             @RequestParam( required = false ) String search,
-            @RequestParam( defaultValue = "DESC" ) Sort.Direction sort,
-            @RequestParam( defaultValue = "ENROLL" ) RoomType roomType
+            @RequestParam( required = false ) Sort.Direction sort,
+            @RequestParam( required = false ) RoomType roomType
     ) {
-        return ResponseEntity.ok( ApiResponse.<ListResponse<UserDTO>>builder()
+        return ResponseEntity.ok( ApiResponse.<ListResponse<UserProfileDTO>>builder()
                 .message( "User successfully deleted" )
                 .payload( roomOwnerService.retrieveEnrollmentsByRoomId( roomId, page, size, search, sort, roomType ) )
                 .status( HttpStatus.OK )

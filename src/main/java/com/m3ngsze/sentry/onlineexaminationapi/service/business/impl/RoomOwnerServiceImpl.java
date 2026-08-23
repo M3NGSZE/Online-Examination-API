@@ -1,17 +1,15 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
-import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
+import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserProfileDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.EnrollmentRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,13 +27,11 @@ import static com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecific
 public class RoomOwnerServiceImpl implements RoomOwnerService {
 
     private final UserRepository userRepository;
-    private final EnrollmentRepository enrollmentRepository;
 
-    private final UserSupport userSupport;
     private final RoomSupport roomSupport;
 
     @Override
-    public ListResponse<UserDTO> retrieveEnrollmentsByRoomId( UUID roomId, Integer page, Integer size, String search, Sort.Direction sort, RoomType roomType  ) {
+    public ListResponse< UserProfileDTO > retrieveEnrollmentsByRoomId( UUID roomId, Integer page, Integer size, String search, Sort.Direction sort, RoomType roomType  ) {
 
         Pageable pageable = PageRequest.of(
                 page - 1,
@@ -53,11 +49,13 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
                 .and( search( search ) )
                 .and( type( room,  roomType) );
 
-        Page<UserDTO> mapUsers = userRepository.findAll( spec, pageable ).map( UtilMapper::toUserDTO );
+        Page<UserProfileDTO> mapUsers1 = userRepository
+                .findAll( spec, pageable )
+                .map( UserMapper::toUserProfileDTO );
 
-        return ListResponse.< UserDTO >builder()
-                .data( mapUsers.getContent() )
-                .pagination(PaginationResponse.of (mapUsers.getTotalElements(), page, size ) )
+        return ListResponse.< UserProfileDTO >builder()
+                .data( mapUsers1.getContent() )
+                .pagination(PaginationResponse.of (mapUsers1.getTotalElements(), page, size ) )
                 .build();
     }
 }

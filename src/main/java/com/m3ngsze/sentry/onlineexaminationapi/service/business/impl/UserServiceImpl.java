@@ -22,8 +22,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.business.RedisService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.TokenService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.RequestMapUtil;
-import com.m3ngsze.sentry.onlineexaminationapi.utility.UtilMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -68,14 +67,14 @@ public class UserServiceImpl implements UserService {
         if (user.getAccountStatus().equals(AccountStatus.DELETED))
             throw new NotFoundException("User not found");
 
-        return UtilMapper.toUserDTO(user);
+        return UserMapper.toUserDTO(user);
     }
 
     @Override
     public UserDTO getUserProfile() {
         User user = userSupport.getCurrentUser();
 
-        UserDTO userDTO = UtilMapper.toUserDTO(user);
+        UserDTO userDTO = UserMapper.toUserDTO(user);
         int age = LocalDateTime.now().getYear() - userDTO.getDateOfBirth().getYear();
         userDTO.setAge(age);
         userDTO.setGender(user.getUserInfo().getGender());
@@ -99,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
         Page<UserDTO> userPage = (Page<UserDTO>) userRepository.findAll(spec, pageable)
                 .filter(u -> !u.getAccountStatus().equals(AccountStatus.DELETED))
-                .map(UtilMapper::toUserDTO);
+                .map(UserMapper::toUserDTO);
 
         return ListResponse.<UserDTO>builder()
                 .data(userPage.getContent())
@@ -246,7 +245,7 @@ public class UserServiceImpl implements UserService {
         UserInfo userInfo = userInfoRepository.findByUser(user)
                 .orElseThrow(() -> new NotFoundException("User info not found"));
 
-        UserInfoRequest userInfoRequest = RequestMapUtil.validateRegisterRequest(request);
+        UserInfoRequest userInfoRequest = UserMapper.validateRegisterRequest(request);
 
         userInfo.setFirstName(userInfoRequest.getFirstName());
         userInfo.setLastName(userInfoRequest.getLastName());
