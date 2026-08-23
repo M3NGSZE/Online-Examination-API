@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.support.impl;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
+import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
@@ -46,9 +47,9 @@ public class RoomSupportImpl implements RoomSupport {
     }
 
     @Override
-    public Room retrieveRoomById( UUID roomId ) {
-        return roomRepository.findById( roomId )
-                .orElseThrow(() -> new NotFoundException( "Room not found" ) );
+    public Room retrieveRoomById(UUID roomId, User user) {
+        return roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
+                .orElseThrow(() -> new NotFoundException("Room not found"));
     }
 
 }

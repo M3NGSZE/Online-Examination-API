@@ -97,11 +97,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public RoomDTO updateRoom(UUID roomId, RoomRequest request) {
+    public RoomDTO updateRoom( UUID roomId, RoomRequest request ) {
         User user = userSupport.getCurrentUser();
 
-        Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
-                .orElseThrow(() -> new NotFoundException("Room not found"));
+        Room room = roomSupport.retrieveRoomById( roomId, user );
+                //.orElseThrow(() -> new NotFoundException("Room not found"));
 
         RoomRequest trim =  RoomRequestTrim(request);
 
@@ -113,37 +113,37 @@ public class RoomServiceImpl implements RoomService {
         room.setSubject(trim.getSubject());
         room.setLimit(trim.getLimit());
 
-        Room save = roomRepository.save(room);
+        Room save = roomRepository.save( room );
 
-        RoomDTO map = modelMapper.map(save, RoomDTO.class);
-        map.setUserId(user.getUserId());
+        RoomDTO map = modelMapper.map( save, RoomDTO.class );
+        map.setUserId( user.getUserId() );
 
         return map;
     }
 
     @Override
-    public RoomDTO findRoomById(UUID roomId) {
+    public RoomDTO findRoomById( UUID roomId ) {
         User user = userSupport.getCurrentUser();
 
-        Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
-                .orElseThrow(() -> new NotFoundException("Room not found"));
+        Room room = roomSupport.retrieveRoomById( roomId, user );
+                //.orElseThrow(() -> new NotFoundException("Room not found"));
 
-        return getRoomDTO(room, modelMapper);
+        return getRoomDTO( room, modelMapper );
     }
 
     @Override
     @Transactional
-    public void deleteRoomById(UUID roomId) {
+    public void deleteRoomById( UUID roomId ) {
         User user = userSupport.getCurrentUser();
 
-        Room room = roomRepository.findByRoomIdAndIsDeletedFalseAndRoomOwners_User(roomId, user)
-                .orElseThrow(() -> new NotFoundException("Room not found"));
+        Room room = roomSupport.retrieveRoomById( roomId, user );
+                //.orElseThrow(() -> new NotFoundException("Room not found"));
 
-        room.setIsDeleted(true);
-        room.setDeletedAt(LocalDateTime.now());
-        room.setUpdatedAt(LocalDateTime.now());
+        room.setIsDeleted( true );
+        room.setDeletedAt( LocalDateTime.now() );
+        room.setUpdatedAt( LocalDateTime.now() );
 
-        roomRepository.save(room);
+        roomRepository.save( room );
     }
 
     @Override

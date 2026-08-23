@@ -6,8 +6,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.UUID;
-
 public class UserSpecification {
 
     public static Specification<User> isEnabled(Boolean enable) {

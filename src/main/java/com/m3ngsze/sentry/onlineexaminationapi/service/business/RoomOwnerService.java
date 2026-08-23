@@ -1,6 +1,5 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service.business;
 
-import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserProfileDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;

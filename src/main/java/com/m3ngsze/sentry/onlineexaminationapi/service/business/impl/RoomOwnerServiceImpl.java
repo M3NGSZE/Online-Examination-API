@@ -10,6 +10,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
 
     private final UserRepository userRepository;
 
+    private final UserSupport userSupport;
     private final RoomSupport roomSupport;
 
     @Override
@@ -42,7 +44,8 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
                 )
         );
 
-        Room room = roomSupport.retrieveRoomById( roomId );
+        User currentUser = userSupport.getCurrentUser();
+        Room room = roomSupport.retrieveRoomById( roomId, currentUser );
 
         Specification<User> spec = Specification
                 .where( enrolledInRoom ( room, roomType ) )

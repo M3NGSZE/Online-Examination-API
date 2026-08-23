@@ -52,7 +52,7 @@ public class UserMapper {
         userProfileDTO.setFirstName( user.getUserInfo().getFirstName() );
         userProfileDTO.setLastName( user.getUserInfo().getLastName() );
         userProfileDTO.setGender( user.getUserInfo().getGender() );
-        userProfileDTO.setProfileUrl( userProfileDTO.getProfileUrl() );
+        userProfileDTO.setProfileUrl( user.getUserInfo().getProfileUrl() );
 
         return  userProfileDTO;
     }

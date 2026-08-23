@@ -3,8 +3,6 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.dto;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.BaseEntity;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.AccountStatus;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.*;
 
 import java.util.UUID;
