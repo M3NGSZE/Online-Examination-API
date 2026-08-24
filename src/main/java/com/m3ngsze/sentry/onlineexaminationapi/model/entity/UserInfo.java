@@ -3,10 +3,12 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "user_info")

@@ -2,11 +2,13 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "rooms")
@@ -42,4 +44,8 @@ public class Room extends BaseEntity {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomInviteCode> roomInviteCodes;
+
+    @OneToMany( mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true )
+    private List<Exam> exams;
+
 }
