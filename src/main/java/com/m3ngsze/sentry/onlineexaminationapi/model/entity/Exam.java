@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.entity;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.ExamStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Table(name = "exams")
 public class Exam extends BaseEntity{
 
     @Id
@@ -29,6 +31,10 @@ public class Exam extends BaseEntity{
 
     @Column( name = "total_marks" )
     private BigDecimal totalMarks;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exam_status")
+    private ExamStatus examStatus;
 
     @Column( name = "started_at" )
     private LocalDateTime startedAt;

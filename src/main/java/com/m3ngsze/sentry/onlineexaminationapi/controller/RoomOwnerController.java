@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping( "api/v1/room-owner" )
 @SecurityRequirement( name = "bearerAuth" )
-@Tag( name = "Room Owner Controller", description = "Handle creating new assignment for enrollment and manage enrollments" )
+@Tag( name = "Room Owner Controller", description = "Handle creating for enrollment and manage enrollments" )
 @RequiredArgsConstructor
 public class RoomOwnerController {
 
@@ -49,5 +49,6 @@ public class RoomOwnerController {
                 .build()
         );
     }
+
 
 }
