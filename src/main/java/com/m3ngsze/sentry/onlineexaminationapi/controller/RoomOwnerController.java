@@ -43,7 +43,7 @@ public class RoomOwnerController {
             @RequestParam( required = false ) RoomType roomType
     ) {
         return ResponseEntity.ok( ApiResponse.< ListResponse< UserProfileDTO > >builder()
-                .message( "User enrollment successfully fetched" )
+                .message( "All enrollments successfully fetched" )
                 .payload( roomOwnerService.retrieveEnrollmentsByRoomId( roomId, page, size, search, sort, roomType ) )
                 .status( HttpStatus.OK )
                 .build()
