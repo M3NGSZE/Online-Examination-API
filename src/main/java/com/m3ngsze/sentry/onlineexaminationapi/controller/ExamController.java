@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.ExamDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.ExamRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.service.business.ExamService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ExamController {
 
+    private final ExamService examService;
 
     public ResponseEntity< ApiResponse <ExamDTO> > createExam( ExamRequest examRequest ) {
 

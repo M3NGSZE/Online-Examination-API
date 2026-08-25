@@ -29,6 +29,4 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
     """, nativeQuery = true)
     List<EnrollCount> countUserEnrollRoomOwner(@Param("userId") UUID userId);
 
-    boolean existsByRoom_RoomIdAndUser_UserId( UUID roomId, UUID userId );
-
 }
