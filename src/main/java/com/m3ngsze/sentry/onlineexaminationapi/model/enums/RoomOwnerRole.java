@@ -4,6 +4,6 @@ public enum RoomOwnerRole {
 
     MAIN_OWNER,
 
-    OWNER
+    CO_OWNER
 
 }
