@@ -5,6 +5,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.InviteCodeDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.*;
+import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomOwnerRole;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.query.EnrollCount;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
@@ -63,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
         RoomOwner owner = new RoomOwner();
         owner.setRoom(newRoom);
         owner.setUser(user);
+        owner.setRoomOwnerRole(RoomOwnerRole.MAIN_OWNER);
 
         RoomOwner save = roomOwnerRepository.save(owner);
 

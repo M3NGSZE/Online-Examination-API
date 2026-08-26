@@ -18,7 +18,7 @@ public class RoomOwner extends BaseEntity {
     private UUID roomOwnerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "exam_status")
+    @Column(name = "room_owner_role")
     private RoomOwnerRole roomOwnerRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
