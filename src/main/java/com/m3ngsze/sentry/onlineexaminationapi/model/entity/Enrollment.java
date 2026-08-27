@@ -19,7 +19,7 @@ public class Enrollment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "room_status")
-    private RoomStatus roomStatus;
+    private RoomStatus RoomType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")

@@ -2,12 +2,15 @@ package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserProfileDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.enums.RoomType;
+import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomInvitationRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +59,10 @@ public class RoomOwnerController {
             summary = "Invite users to room",
             description = "Room Owner use for invite any of user (Co-Owner & Enrollment)"
     )
-    public ResponseEntity< ApiResponse < UserProfileDTO > > roomInvitation( ) {
+    public ResponseEntity< ApiResponse < UserProfileDTO > > roomInvitation(
+            @PathVariable( "room-id" ) UUID roomId ,
+            @RequestBody @Valid RoomInvitationRequest roomInvitationRequest
+            ) {
         return ResponseEntity.ok( ApiResponse.< UserProfileDTO >builder()
                 .message( "" )
                 .payload( null )
