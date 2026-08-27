@@ -50,5 +50,19 @@ public class RoomOwnerController {
         );
     }
 
+    @GetMapping( "invitation/{room-id}" )
+    @PreAuthorize( "hasRole('ROLE_USER')" )
+    @Operation(
+            summary = "Invite users to room",
+            description = "Room Owner use for invite any of user (Co-Owner & Enrollment)"
+    )
+    public ResponseEntity< ApiResponse < UserProfileDTO > > roomInvitation( ) {
+        return ResponseEntity.ok( ApiResponse.< UserProfileDTO >builder()
+                .message( "" )
+                .payload( null )
+                .status( HttpStatus.OK)
+                .build()
+        );
+    }
 
 }
