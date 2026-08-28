@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -61,10 +62,10 @@ public class RoomOwnerController {
     )
     public ResponseEntity< ApiResponse < UserProfileDTO > > roomInvitation(
             @PathVariable( "room-id" ) UUID roomId ,
-            @RequestBody @Valid RoomInvitationRequest roomInvitationRequest
+            @RequestBody @Valid List< RoomInvitationRequest > roomInvitationRequest
             ) {
         return ResponseEntity.ok( ApiResponse.< UserProfileDTO >builder()
-                .message( "" )
+                .message( "Users invitation to room is successfully" )
                 .payload( null )
                 .status( HttpStatus.OK)
                 .build()
