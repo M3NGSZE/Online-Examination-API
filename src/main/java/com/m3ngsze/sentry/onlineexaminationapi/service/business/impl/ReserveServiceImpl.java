@@ -1,5 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
+import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
@@ -43,5 +45,16 @@ public class ReserveServiceImpl implements ReserveService {
                 .and(ownBy(user));
 
         return roomSupport.getUserRoom(page, size, sort, spec);
+    }
+
+    @Override
+    public M3n9sZe cardOnlineOperation(M3n9sZe requestBody) {
+
+        M3n9sZe outputData = new M3n9sZe();
+
+        M3n9sZe user = new M3n9sZe();
+        user.setString( "userId", "" );
+
+        return outputData;
     }
 }

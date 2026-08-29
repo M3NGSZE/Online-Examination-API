@@ -67,14 +67,14 @@ public class ReserveController {
     @PostMapping( "/card-block" )
     @PreAuthorize( "hasRole('ROLE_USER')" )
     @Operation(
-            summary = "Get all user rooms",
-            description = "User use for get all own user join rooms"
+            summary = "Unrelated wit examination system",
+            description = "Use it for testing with"
     )
     public ResponseEntity< ApiResponse < M3n9sZe > > cardOnlineOperation ( @RequestBody M3n9sZe requestBody ) {
 
         return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
                         .message( "testing print value" )
-                        .payload( requestBody )
+                        .payload( reserveService.cardOnlineOperation( requestBody ) )
                         .status( HttpStatus.OK)
                         .build()
         );
