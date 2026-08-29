@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.controller;
 
+import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ApiResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
@@ -14,10 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/reserve")
@@ -65,4 +63,21 @@ public class ReserveController {
                 .status(HttpStatus.OK)
                 .build());
     }
+
+    @PostMapping( "/card-block" )
+    @PreAuthorize( "hasRole('ROLE_USER')" )
+    @Operation(
+            summary = "Get all user rooms",
+            description = "User use for get all own user join rooms"
+    )
+    public ResponseEntity< ApiResponse < M3n9sZe > > cardOnlineOperation ( @RequestBody M3n9sZe requestBody ) {
+
+        return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
+                        .message( "testing print value" )
+                        .payload( requestBody )
+                        .status( HttpStatus.OK)
+                        .build()
+        );
+    }
+
 }

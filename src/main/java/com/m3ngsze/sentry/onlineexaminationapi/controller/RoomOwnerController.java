@@ -65,7 +65,7 @@ public class RoomOwnerController {
             @RequestBody @Valid List< RoomInvitationRequest > roomInvitationRequest
             ) {
         return ResponseEntity.ok( ApiResponse.< UserProfileDTO >builder()
-                .message( "Users invitation to room is successfully" )
+                .message( "Users invitation to room is   successfully" )
                 .payload( null )
                 .status( HttpStatus.OK)
                 .build()
