@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.support.impl;
+package com.m3ngsze.sentry.onlineexaminationapi.service.common.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
@@ -7,7 +7,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.RoomRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,7 @@ import static com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil.getRoomDT
 
 @Service
 @RequiredArgsConstructor
-public class RoomSupportImpl implements RoomSupport {
+public class RoomCommonImpl implements RoomCommon {
 
     private final RoomRepository roomRepository;
 

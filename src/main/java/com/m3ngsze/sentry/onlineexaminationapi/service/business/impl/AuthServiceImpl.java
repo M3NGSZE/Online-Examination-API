@@ -19,7 +19,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.RoleRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserSessionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.*;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final OtpGenerator otpGenerator;
 
-    private final UserSupport userSupport;
+    private final UserCommon userCommon;
     private final RedisService redisService;
     private final EmailService emailService;
     private final TokenService tokenService;
@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("INVALID_CREDENTIALS", e);
         }
 
-        UserDetails userDetails = userSupport.loadUserByUsername(request.getEmail());
+        UserDetails userDetails = userCommon.loadUserByUsername(request.getEmail());
         User user = getUser((User) userDetails);
 
         TokenDTO refreshToken = tokenService.createRefreshToken(user);
@@ -254,12 +254,12 @@ public class AuthServiceImpl implements AuthService {
 
         String hashToken = TokenUtil.hashToken(refreshToken.trim());
 
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
         UserSession userSession = userSessionRepository.findByRefreshTokenHashAndUser(hashToken, user)
                 .orElseThrow(() -> new NotFoundException("Refresh token not found for current user"));
 
-        String token = userSupport.extractAccessToken(request);
+        String token = userCommon.extractAccessToken(request);
         long jwtTokenExpiry = JwtService.JWT_TOKEN_EXPIRY;// seconds until token expires
         redisService.revokeToken(token, jwtTokenExpiry);
 

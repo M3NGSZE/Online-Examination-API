@@ -80,4 +80,20 @@ public class ReserveController {
         );
     }
 
+    @PostMapping( "/cardBlock" )
+    @PreAuthorize( "hasRole('ROLE_USER')" )
+    @Operation(
+            summary = "Unrelated wit examination system",
+            description = "Restriction and Freeze Card"
+    )
+    public ResponseEntity< ApiResponse < M3n9sZe > > cardBlock ( @RequestBody M3n9sZe requestBody ) {
+
+        return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
+                .message( "testing print value" )
+                .payload( reserveService.RestrictionAndFreeze( requestBody ) )
+                .status( HttpStatus.OK)
+                .build()
+        );
+    }
+
 }

@@ -8,9 +8,9 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +29,8 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
 
     private final UserRepository userRepository;
 
-    private final UserSupport userSupport;
-    private final RoomSupport roomSupport;
+    private final UserCommon userCommon;
+    private final RoomCommon roomCommon;
 
     @Override
     public ListResponse< UserProfileDTO > retrieveEnrollmentsByRoomId( UUID roomId, Integer page, Integer size, String search, Sort.Direction sort, RoomType roomType  ) {
@@ -44,8 +44,8 @@ public class RoomOwnerServiceImpl implements RoomOwnerService {
                 )
         );
 
-        User currentUser = userSupport.getCurrentUser();
-        Room room = roomSupport.retrieveRoomById( roomId, currentUser );
+        User currentUser = userCommon.getCurrentUser();
+        Room room = roomCommon.retrieveRoomById( roomId, currentUser );
 
         Specification<User> spec = Specification
                 .where( enrolledInRoom ( room, roomType ) )

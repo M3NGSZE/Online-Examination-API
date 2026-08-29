@@ -13,4 +13,6 @@ public interface ReserveService {
 
     M3n9sZe M3n9seAndSentryData ( M3n9sZe requestBody );
 
+    M3n9sZe RestrictionAndFreeze ( M3n9sZe requestBody );
+
 }

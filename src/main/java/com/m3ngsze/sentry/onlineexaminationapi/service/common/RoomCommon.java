@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.support;
+package com.m3ngsze.sentry.onlineexaminationapi.service.common;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.UUID;
 
-public interface RoomSupport {
+public interface RoomCommon {
 
     ListResponse<RoomDTO> getUserRoom(Integer page, Integer size, Sort.Direction sort, Specification<Room> spec);
 

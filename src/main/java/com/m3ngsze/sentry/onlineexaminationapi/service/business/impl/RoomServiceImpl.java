@@ -11,8 +11,8 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.query.EnrollCount;
 import com.m3ngsze.sentry.onlineexaminationapi.model.request.RoomRequest;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.*;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.RoomSupport;
-import com.m3ngsze.sentry.onlineexaminationapi.service.support.UserSupport;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
+import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomService;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.ConvertUtil;
 import com.m3ngsze.sentry.onlineexaminationapi.utility.RoomUtil;
@@ -42,8 +42,8 @@ public class RoomServiceImpl implements RoomService {
     private final RoomInviteCodeRepository roomInviteCodeRepository;
     private final EnrollmentRepository enrollmentRepository;
 
-    private final UserSupport userSupport;
-    private final RoomSupport roomSupport;
+    private final UserCommon userCommon;
+    private final RoomCommon roomCommon;
 
     private final ModelMapper modelMapper;
 
@@ -51,7 +51,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomDTO createRoom(RoomRequest request) {
 
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
         RoomRequest trim =  RoomRequestTrim(request);
 
@@ -100,9 +100,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomDTO updateRoom( UUID roomId, RoomRequest request ) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
-        Room room = roomSupport.retrieveRoomById( roomId, user );
+        Room room = roomCommon.retrieveRoomById( roomId, user );
                 //.orElseThrow(() -> new NotFoundException("Room not found"));
 
         RoomRequest trim =  RoomRequestTrim(request);
@@ -125,9 +125,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomDTO findRoomById( UUID roomId ) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
-        Room room = roomSupport.retrieveRoomById( roomId, user );
+        Room room = roomCommon.retrieveRoomById( roomId, user );
                 //.orElseThrow(() -> new NotFoundException("Room not found"));
 
         return getRoomDTO( room, modelMapper );
@@ -136,9 +136,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public void deleteRoomById( UUID roomId ) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
-        Room room = roomSupport.retrieveRoomById( roomId, user );
+        Room room = roomCommon.retrieveRoomById( roomId, user );
                 //.orElseThrow(() -> new NotFoundException("Room not found"));
 
         room.setIsDeleted( true );
@@ -211,7 +211,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomDTO joinRoom(String code) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
         String hashCode = RoomUtil.hash(code);
 
@@ -241,7 +241,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public void leaveRoom(UUID roomId) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new NotFoundException("Room not found"));
@@ -254,19 +254,19 @@ public class RoomServiceImpl implements RoomService {
         Specification<Room> spec = Specification
                 .where(search(search));
 
-        return roomSupport.getUserRoom(page, size, sort, spec);
+        return roomCommon.getUserRoom(page, size, sort, spec);
     }
 
     @Override
     public ListResponse<RoomDTO> getAllUserRooms(Integer page, Integer size, String search, Sort.Direction sort, RoomType room) {
-        User user = userSupport.getCurrentUser();
+        User user = userCommon.getCurrentUser();
 
         Specification<Room> spec = Specification
                 .where(search(search))
                 .and(isDeleted(false))
                 .and(RoomType(user, room));
 
-        ListResponse<RoomDTO> userRoom = roomSupport.getUserRoom(page, size, sort, spec);
+        ListResponse<RoomDTO> userRoom = roomCommon.getUserRoom(page, size, sort, spec);
 
         List<EnrollCount> enrollCount = enrollmentRepository.countUserEnrollRoomOwner(user.getUserId());
 

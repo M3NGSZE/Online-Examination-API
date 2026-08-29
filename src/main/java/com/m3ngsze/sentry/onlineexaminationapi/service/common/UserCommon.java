@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.service.support;
+package com.m3ngsze.sentry.onlineexaminationapi.service.common;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserSupport extends UserDetailsService {
+public interface UserCommon extends UserDetailsService {
 
     User getCurrentUser();
 
