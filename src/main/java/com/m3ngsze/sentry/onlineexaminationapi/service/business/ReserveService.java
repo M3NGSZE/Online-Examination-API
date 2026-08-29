@@ -11,6 +11,6 @@ public interface ReserveService {
 
     ListResponse<RoomDTO> getOwnUserRooms(Integer page, Integer size, String search, Sort.Direction sort);
 
-    M3n9sZe cardOnlineOperation ( M3n9sZe requestBody );
+    M3n9sZe M3n9seAndSentryData ( M3n9sZe requestBody );
 
 }

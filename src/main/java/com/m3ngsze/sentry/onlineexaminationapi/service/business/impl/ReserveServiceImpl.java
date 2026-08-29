@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecification.*;
 
 @Service
@@ -48,12 +50,37 @@ public class ReserveServiceImpl implements ReserveService {
     }
 
     @Override
-    public M3n9sZe cardOnlineOperation(M3n9sZe requestBody) {
+    public M3n9sZe M3n9seAndSentryData(M3n9sZe requestBody) {
 
         M3n9sZe outputData = new M3n9sZe();
 
+        SentryData zList = new SentryData();
+
         M3n9sZe user = new M3n9sZe();
-        user.setString( "userId", "" );
+        user.setString( "userId", "9f0882eb-e278-4b14-96ca-5f2931407fd9" );
+        user.setString( "username", "Sentry Void" );
+        user.setString( "gender", "Male" );
+
+        zList.addM3n9se( user );
+
+        M3n9sZe user1 = new M3n9sZe();
+        user1.setString( "userId", requestBody.getString("userId" ) );
+        user1.setString( "username", requestBody.getString("username" ) );
+        user1.setString( "gender", requestBody.getString("gender" ) );
+
+        zList.addM3n9se( user1 );
+
+        outputData.addM3n9sZe( "user", user );
+        outputData.setSentryData( "listUsers", zList);
+        outputData.setSentryData( "newCardList", requestBody.getSentryData( "cardList" ) );
+        outputData.addM3n9sZe( "newHeader", requestBody.getM3n9sZe( "header" ) );
+
+        List<M3n9sZe> list = zList.toArrayList();
+        for ( M3n9sZe m: list) {
+            System.out.println( m );
+        }
+
+        zList.removeM3n9se( user1 );
 
         return outputData;
     }

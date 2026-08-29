@@ -27,4 +27,7 @@ public class Card extends BaseEntity {
 
     private String remark;
 
+    @Column( name = "expired_date" )
+    private String expiredDate;
+
 }

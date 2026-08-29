@@ -64,17 +64,17 @@ public class ReserveController {
                 .build());
     }
 
-    @PostMapping( "/card-block" )
+    @PostMapping( "/M3n9seAndSentryData" )
     @PreAuthorize( "hasRole('ROLE_USER')" )
     @Operation(
             summary = "Unrelated wit examination system",
-            description = "Use it for testing with"
+            description = "Use it for testing with new custom response and request body"
     )
-    public ResponseEntity< ApiResponse < M3n9sZe > > cardOnlineOperation ( @RequestBody M3n9sZe requestBody ) {
+    public ResponseEntity< ApiResponse < M3n9sZe > > M3n9seAndSentryData ( @RequestBody M3n9sZe requestBody ) {
 
         return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
                         .message( "testing print value" )
-                        .payload( reserveService.cardOnlineOperation( requestBody ) )
+                        .payload( reserveService.M3n9seAndSentryData( requestBody ) )
                         .status( HttpStatus.OK)
                         .build()
         );
