@@ -1,11 +1,16 @@
 package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
+import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
+import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.model.card.Card;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRepository;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRestrictionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
@@ -24,6 +29,9 @@ public class ReserveServiceImpl implements ReserveService {
 
     private final UserCommon userCommon;
     private final RoomCommon roomCommon;
+
+    private final CardRepository cardRepository;
+    private final CardRestrictionRepository cardRestrictionRepository;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
@@ -86,7 +94,53 @@ public class ReserveServiceImpl implements ReserveService {
     }
 
     @Override
-    public M3n9sZe RestrictionAndFreeze(M3n9sZe requestBody) {
+    public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
+
+        M3n9sZe newCard = separateCard( requestBody );
+
+        return null;
+    }
+
+    private M3n9sZe separateCard( M3n9sZe inputData ) {
+        M3n9sZe outputData = new M3n9sZe();
+
+        for ( M3n9sZe card: inputData.getSentryData( "cardList" ).toArrayList() ) {
+            if ( card.containsKey( "restrictOnlineCambodia" ) || card.containsKey( "restrictOnlineOversea" ) ||
+                card.containsKey( "restrictInStoreCambodia" ) || card.containsKey( "restrictInStoreOversea" ) ) {
+
+                validateField( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
+            }
+
+            /*if ( card.containsKey( "freezeYN" ) ) {
+
+            }*/
+
+            validateField( card, "");
+        }
+
+        return outputData;
+    }
+
+    private void validateField( M3n9sZe param, String... sKey ) {
+        for ( String key : sKey ) {
+            if ( param.containsKey( key ) && param.getString( key ).isEmpty() ) {
+                throw new BadRequestException( key + " field is empty");
+            }
+        }
+    }
+
+    private M3n9sZe restrictionToFreeze( M3n9sZe inputData, String... sKey ) {
+
+        Card cardDetail =  cardRepository.findById( inputData.getString( "cardId" ) )
+                .orElseThrow( () -> new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" ) );
+
+        return null;
+    }
+
+    private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
+
+        cardRestrictionRepository.findByCardNumberSchemeId( null, null );
+
         return null;
     }
 }
