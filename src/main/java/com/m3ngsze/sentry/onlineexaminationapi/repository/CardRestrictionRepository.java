@@ -3,9 +3,11 @@ package com.m3ngsze.sentry.onlineexaminationapi.repository;
 import com.m3ngsze.sentry.onlineexaminationapi.model.card.CardRestriction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+@Repository
 public interface CardRestrictionRepository extends JpaRepository< CardRepository, UUID > {
 
     @Query( value = """
