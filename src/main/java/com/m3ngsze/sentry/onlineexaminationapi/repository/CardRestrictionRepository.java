@@ -1,6 +1,7 @@
 package com.m3ngsze.sentry.onlineexaminationapi.repository;
 
 import com.m3ngsze.sentry.onlineexaminationapi.model.card.CardRestriction;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,6 @@ public interface CardRestrictionRepository extends JpaRepository< CardRepository
         WHERE CR.CARD_NUMBER = :cardNumber
         AND CR.SCHEME_ID     = :schemeId
     """, nativeQuery = true)
-    CardRestriction findByCardNumberSchemeId( String cardNumber, String schemeId);
+    Tuple findByCardNumberSchemeId(String cardNumber, String schemeId);
 
 }

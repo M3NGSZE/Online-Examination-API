@@ -139,7 +139,7 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
 
-        cardRestrictionRepository.findByCardNumberSchemeId( null, null );
+        cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString( "cardNumber" ), inputData.getString( "schemeId" ) );
 
         return null;
     }

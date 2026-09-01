@@ -71,7 +71,6 @@ public class ReserveController {
             description = "Use it for testing with new custom response and request body"
     )
     public ResponseEntity< ApiResponse < M3n9sZe > > M3n9seAndSentryData ( @RequestBody M3n9sZe requestBody ) {
-
         return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
                         .message( "testing print value" )
                         .payload( reserveService.M3n9seAndSentryData( requestBody ) )
@@ -87,7 +86,6 @@ public class ReserveController {
             description = "Restriction and Freeze Card"
     )
     public ResponseEntity< ApiResponse < M3n9sZe > > restrictionAndFreeze ( @RequestBody M3n9sZe requestBody ) {
-
         return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
                 .message( "Cards restriction and freeze successfully" )
                 .payload( reserveService.restrictionAndFreeze( requestBody ) )

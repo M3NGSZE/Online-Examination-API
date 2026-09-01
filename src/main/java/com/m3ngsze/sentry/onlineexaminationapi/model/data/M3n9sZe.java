@@ -41,6 +41,11 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
         return containsKey( key) ? toSentryData( get( key ) ) : null;
     }
 
+    public M3n9sZe setObject(String key, Object value) {
+        put(key, value);
+        return this;
+    }
+
     /*
     *   convert object into M3n9sZe object
     */
