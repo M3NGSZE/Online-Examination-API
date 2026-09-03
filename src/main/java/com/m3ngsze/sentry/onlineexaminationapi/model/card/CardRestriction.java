@@ -27,9 +27,15 @@ public class CardRestriction extends BaseEntity {
     @Column( name = "user_id" )
     private String userId;
 
-    @Column(name = "scheme_id")
+    @Column( name = "scheme_id" )
     private String schemeId;
 
     private String remark;
+
+    @Column( name = "from_date" )
+    private String fromDate;
+
+    @Column( name = "to_date" )
+    private String toDate;
 
 }

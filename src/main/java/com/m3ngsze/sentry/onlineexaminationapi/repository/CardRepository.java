@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CardRepository extends JpaRepository<Card, String> {
+public interface CardRepository extends JpaRepository< Card, String > {
 
     @Query( value ="""
         SELECT EXISTS(

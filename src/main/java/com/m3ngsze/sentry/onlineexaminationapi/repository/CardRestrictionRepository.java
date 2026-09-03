@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface CardRestrictionRepository extends JpaRepository< CardRepository, UUID > {
+public interface CardRestrictionRepository extends JpaRepository< CardRestriction, UUID > {
 
     @Query( value = """
         SELECT

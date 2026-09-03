@@ -97,14 +97,14 @@ public class ReserveServiceImpl implements ReserveService {
     @Override
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
         M3n9sZe outputData = new M3n9sZe();
-        SentryData cards = new SentryData();
+        SentryData cardList = new SentryData();
         M3n9sZe acquireCards = separateCard( requestBody );
 
-        for ( M3n9sZe card: acquireCards.getSentryData( "" ).toArrayList() ) {
+        for ( M3n9sZe card: acquireCards.getSentryData( "cardList" ).toArrayList() ) {
             if ( card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
                 M3n9sZe tCard = processRestrictCard( card );
                 if ( card.getString( "FreezeYN" ).equalsIgnoreCase( "Y" ) ) {
-                    cards.add( tCard );
+                    cardList.add( tCard );
                 }
             }
 
@@ -114,10 +114,10 @@ public class ReserveServiceImpl implements ReserveService {
             } else if ( card.containsKey( "isFreezeYN" ) && card.getString( "isFreezeYN" ).equalsIgnoreCase( "N" ) ) {
                 tCard = processUnFreezeCard( card );
             }
-            cards.add( tCard );
+            cardList.add( tCard );
         }
 
-        outputData.setSentryData( "" , cards);
+        outputData.setSentryData( "cardList" , cardList );
 
         return outputData;
     }
@@ -135,20 +135,28 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe separateCard( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
+        SentryData cardList = new SentryData();
 
         for ( M3n9sZe card: inputData.getSentryData( "cardList" ).toArrayList() ) {
             if ( card.containsKey( "restrictOnlineCambodia" ) || card.containsKey( "restrictOnlineOversea" ) ||
                 card.containsKey( "restrictInStoreCambodia" ) || card.containsKey( "restrictInStoreOversea" ) ) {
 
                 validateField( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
+
+                M3n9sZe tCard = restrictionToFreeze( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
+
+                cardList.add( card );
             }
 
-            /*if ( card.containsKey( "freezeYN" ) ) {
+            if ( card.containsKey( "freezeYN" ) ) {
+                validateField( card, "freezeYN" );
+                card.setString( "isFreezeYN" , card.getString( "freezeYN" ) );
 
-            }*/
-
-            validateField( card, "");
+                cardList.add( card );
+            }
         }
+
+        outputData.setSentryData( "cardList", cardList );
 
         return outputData;
     }
@@ -170,9 +178,20 @@ public class ReserveServiceImpl implements ReserveService {
     }
 
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
+        M3n9sZe outputData = new M3n9sZe();
 
-        M3n9sZe t = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId(inputData.getString("cardNumber"), inputData.getString("schemeId") ) );
+        M3n9sZe onlineCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "16" ) );
 
+        M3n9sZe onlineOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "17" ) );
+
+        M3n9sZe inStoreCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "18" ) );
+
+        M3n9sZe inStoreOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "19" ) );
+
+        return outputData;
+    }
+
+    private M3n9sZe retrieveCardFreezeStatus( M3n9sZe inputData ) {
         return null;
     }
 }
