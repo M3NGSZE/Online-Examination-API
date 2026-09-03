@@ -2,7 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
-import com.m3ngsze.sentry.onlineexaminationapi.model.card.Card;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.M3n9seMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
@@ -14,6 +14,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRestrictionReposit
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -95,9 +96,40 @@ public class ReserveServiceImpl implements ReserveService {
 
     @Override
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
+        M3n9sZe outputData = new M3n9sZe();
+        SentryData cards = new SentryData();
+        M3n9sZe acquireCards = separateCard( requestBody );
 
-        M3n9sZe newCard = separateCard( requestBody );
+        for ( M3n9sZe card: acquireCards.getSentryData( "" ).toArrayList() ) {
+            if ( card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
+                M3n9sZe tCard = processRestrictCard( card );
+                if ( card.getString( "FreezeYN" ).equalsIgnoreCase( "Y" ) ) {
+                    cards.add( tCard );
+                }
+            }
 
+            M3n9sZe tCard = new M3n9sZe();
+            if ( card.containsKey( "isFreezeYN" ) && card.getString( "isFreezeYN" ).equalsIgnoreCase( "Y" ) ) {
+                tCard = processFreezeCard( card );
+            } else if ( card.containsKey( "isFreezeYN" ) && card.getString( "isFreezeYN" ).equalsIgnoreCase( "N" ) ) {
+                tCard = processUnFreezeCard( card );
+            }
+            cards.add( tCard );
+        }
+
+        outputData.setSentryData( "" , cards);
+
+        return outputData;
+    }
+
+    private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
+        return null;
+    }
+
+    private M3n9sZe processFreezeCard( M3n9sZe inputData ) {
+        return null;
+    }
+    private M3n9sZe processUnFreezeCard( M3n9sZe inputData ) {
         return null;
     }
 
@@ -131,15 +163,15 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe restrictionToFreeze( M3n9sZe inputData, String... sKey ) {
 
-        Card cardDetail =  cardRepository.findById( inputData.getString( "cardId" ) )
-                .orElseThrow( () -> new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" ) );
+        M3n9seMapper.toM3n9sZe( (Tuple) cardRepository.findById( inputData.getString( "cardId" ) )
+                .orElseThrow( () -> new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" ) ));
 
         return null;
     }
 
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
 
-        cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString( "cardNumber" ), inputData.getString( "schemeId" ) );
+        M3n9sZe t = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId(inputData.getString("cardNumber"), inputData.getString("schemeId") ) );
 
         return null;
     }
