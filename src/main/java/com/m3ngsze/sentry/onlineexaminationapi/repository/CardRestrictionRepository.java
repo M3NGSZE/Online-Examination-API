@@ -19,6 +19,8 @@ public interface CardRestrictionRepository extends JpaRepository< CardRestrictio
             , CR.USER_ID            AS "userId"
             , CR.SCHEME_ID          AS "schemeId"
             , CR.REMARK             AS "remark"
+            , CR.FROM_DATE          AS "fromDate"
+            , CR.TO_DATE            AS "toDate"
             , CR.CREATED_AT         AS "createdAt"
             , CR.UPDATED_AT         AS "updatedAT"
         FROM CARD_RESTRICTION CR

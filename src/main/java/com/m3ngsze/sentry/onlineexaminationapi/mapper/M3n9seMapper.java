@@ -9,7 +9,7 @@ import java.util.List;
 
 public class M3n9seMapper {
 
-    public static M3n9sZe toM3n9sZe(Tuple tuple) {
+    public static M3n9sZe toM3n9sZe( Tuple tuple ) {
 
         M3n9sZe data = new M3n9sZe();
 
@@ -25,7 +25,7 @@ public class M3n9seMapper {
         return data;
     }
 
-    public static SentryData toSentryData(List<Tuple> tuples) {
+    public static SentryData toSentryData( List<Tuple> tuples ) {
 
         SentryData data = new SentryData();
 

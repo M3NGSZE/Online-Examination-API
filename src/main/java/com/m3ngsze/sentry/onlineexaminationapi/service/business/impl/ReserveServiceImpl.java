@@ -9,6 +9,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
+import com.m3ngsze.sentry.onlineexaminationapi.repository.CardFreezeRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRestrictionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
@@ -33,6 +34,7 @@ public class ReserveServiceImpl implements ReserveService {
 
     private final CardRepository cardRepository;
     private final CardRestrictionRepository cardRestrictionRepository;
+    private final CardFreezeRepository cardFreezeRepository;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
@@ -179,6 +181,8 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
+
+        M3n9sZe cardInfo = M3n9seMapper.toM3n9sZe( cardRepository.retrieveCardInfo( inputData.getString( "cardId" ) ) );
 
         M3n9sZe onlineCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "16" ) );
 

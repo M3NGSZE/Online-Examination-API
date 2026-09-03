@@ -30,7 +30,7 @@ public class Card extends BaseEntity {
     @Column( name = "expired_date" )
     private String expiredDate;
 
-    @Column( name = "issue_date")
-    private String issueDate;
+    @Column( name = "issued_date")
+    private String issuedDate;
 
 }
