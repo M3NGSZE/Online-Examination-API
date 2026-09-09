@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.M3n9seMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
@@ -35,6 +36,8 @@ public class ReserveServiceImpl implements ReserveService {
     private final CardRepository cardRepository;
     private final CardRestrictionRepository cardRestrictionRepository;
     private final CardFreezeRepository cardFreezeRepository;
+
+    private final CardMapper cardMapper;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
@@ -182,7 +185,7 @@ public class ReserveServiceImpl implements ReserveService {
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
 
-        M3n9sZe cardInfo = M3n9seMapper.toM3n9sZe( cardRepository.retrieveCardInfo( inputData.getString( "cardId" ) ) );
+        /*M3n9sZe cardInfo = M3n9seMapper.toM3n9sZe( cardRepository.retrieveCardInfo( inputData.getString( "cardId" ) ) );
 
         M3n9sZe onlineCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "16" ) );
 
@@ -190,7 +193,11 @@ public class ReserveServiceImpl implements ReserveService {
 
         M3n9sZe inStoreCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "18" ) );
 
-        M3n9sZe inStoreOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "19" ) );
+        M3n9sZe inStoreOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "19" ) );*/
+
+        M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
+
+        if ( cardInfo == null ) throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
         return outputData;
     }

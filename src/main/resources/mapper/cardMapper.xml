@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper">
+
+    <select id="retrieveCardInfoByCardId"
+            parameterType="java.util.UUID"
+            resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
+
+        SELECT
+              C.CARD_ID         AS "cardId"
+            , C.CARD_NUMBER     AS "cardNumber"
+            , C.USER_ID         AS "userId"
+            , C.CARD_TYPE       AS "cardType"
+            , C.REMARK          AS "remark"
+            , C.EXPIRED_DATE    AS "expiredDate"
+            , C.ISSUED_DATE     AS "issuedDate"
+            , C.CREATED_DATE    AS "createdAt"
+            , C.UPDATED_DATE    AS "updatedAt"
+        FROM CARD C
+        WHERE C.CARD_ID = #{cardId}
+
+    </select>
+
+</mapper>
