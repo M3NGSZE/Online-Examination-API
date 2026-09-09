@@ -7,7 +7,7 @@
 <mapper namespace="com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper">
 
     <select id="retrieveCardInfoByCardId"
-            parameterType="java.util.UUID"
+            parameterType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe"
             resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
 
         SELECT
@@ -18,8 +18,8 @@
             , C.REMARK          AS "remark"
             , C.EXPIRED_DATE    AS "expiredDate"
             , C.ISSUED_DATE     AS "issuedDate"
-            , C.CREATED_DATE    AS "createdAt"
-            , C.UPDATED_DATE    AS "updatedAt"
+            , C.CREATED_AT    AS "createdAt"
+            , C.UPDATED_AT    AS "updatedAt"
         FROM CARD C
         WHERE C.CARD_ID = #{cardId}
 

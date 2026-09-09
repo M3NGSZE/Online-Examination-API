@@ -101,7 +101,7 @@ public class ReserveServiceImpl implements ReserveService {
 
     @Override
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
-        M3n9sZe outputData = new M3n9sZe();
+        /*M3n9sZe outputData = new M3n9sZe();
         SentryData cardList = new SentryData();
         M3n9sZe acquireCards = separateCard( requestBody );
 
@@ -122,9 +122,9 @@ public class ReserveServiceImpl implements ReserveService {
             cardList.add( tCard );
         }
 
-        outputData.setSentryData( "cardList" , cardList );
+        outputData.setSentryData( "cardList" , cardList );*/
 
-        return outputData;
+        return retrieveCardStatus ( requestBody );
     }
 
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
@@ -199,7 +199,7 @@ public class ReserveServiceImpl implements ReserveService {
 
         if ( cardInfo == null ) throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
-        return outputData;
+        return cardInfo;
     }
 
     private M3n9sZe retrieveCardFreezeStatus( M3n9sZe inputData ) {
