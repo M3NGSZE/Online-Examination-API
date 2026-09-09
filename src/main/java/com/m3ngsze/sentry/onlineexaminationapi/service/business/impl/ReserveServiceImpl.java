@@ -4,15 +4,13 @@ import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.M3n9seMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.model.card.CardType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.RoomDTO;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.Room;
 import com.m3ngsze.sentry.onlineexaminationapi.model.entity.User;
 import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.CardFreezeRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRepository;
-import com.m3ngsze.sentry.onlineexaminationapi.repository.CardRestrictionRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
@@ -32,10 +30,6 @@ public class ReserveServiceImpl implements ReserveService {
 
     private final UserCommon userCommon;
     private final RoomCommon roomCommon;
-
-    private final CardRepository cardRepository;
-    private final CardRestrictionRepository cardRestrictionRepository;
-    private final CardFreezeRepository cardFreezeRepository;
 
     private final CardMapper cardMapper;
 
@@ -101,9 +95,9 @@ public class ReserveServiceImpl implements ReserveService {
 
     @Override
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
-        /*M3n9sZe outputData = new M3n9sZe();
+        M3n9sZe outputData = new M3n9sZe();
         SentryData cardList = new SentryData();
-        M3n9sZe acquireCards = separateCard( requestBody );
+        /*M3n9sZe acquireCards = separateCard( requestBody );
 
         for ( M3n9sZe card: acquireCards.getSentryData( "cardList" ).toArrayList() ) {
             if ( card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
@@ -124,7 +118,13 @@ public class ReserveServiceImpl implements ReserveService {
 
         outputData.setSentryData( "cardList" , cardList );*/
 
-        return retrieveCardStatus ( requestBody );
+        for ( M3n9sZe card: requestBody.getSentryData( "cardList").toArrayList() ) {
+            cardList.add( retrieveCardStatus( card ) );
+        }
+
+        outputData.setSentryData( "cardList" , cardList );
+
+        return outputData;
     }
 
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
@@ -176,30 +176,48 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe restrictionToFreeze( M3n9sZe inputData, String... sKey ) {
 
-        M3n9seMapper.toM3n9sZe( (Tuple) cardRepository.findById( inputData.getString( "cardId" ) )
-                .orElseThrow( () -> new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" ) ));
-
         return null;
     }
 
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
 
-        /*M3n9sZe cardInfo = M3n9seMapper.toM3n9sZe( cardRepository.retrieveCardInfo( inputData.getString( "cardId" ) ) );
-
-        M3n9sZe onlineCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "16" ) );
-
-        M3n9sZe onlineOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "17" ) );
-
-        M3n9sZe inStoreCambodia = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "18" ) );
-
-        M3n9sZe inStoreOversea = M3n9seMapper.toM3n9sZe( cardRestrictionRepository.findByCardNumberSchemeId( inputData.getString("cardNumber"), "19" ) );*/
-
         M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
 
         if ( cardInfo == null ) throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
-        return cardInfo;
+        M3n9sZe rOCS = new M3n9sZe();
+        rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+        rOCS.setString( "schemeId" , "16" );
+        outputData.setString( "isActiveOnlineCambodia", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), "isActiveOnlineCambodia" ).getString( "isActiveOnlineCambodia" ) );
+
+        M3n9sZe rIOS = new M3n9sZe();
+        rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+        rIOS.setString( "schemeId" , "17" );
+        outputData.setString( "isActiveOnlineOversea", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOS ), "isActiveOnlineOversea" ).getString( "isActiveOnlineOversea" ) );
+
+        if ( !cardInfo.getString( "cardType" ).equals( CardType.VIRTUAL.toString() ) ) {
+            M3n9sZe rICS = new M3n9sZe();
+            rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+            rICS.setString( "schemeId" , "18" );
+            outputData.setString( "isActiveInStoreCambodia", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rICS ), "isActiveInStoreCambodia" ).getString( "isActiveInStoreCambodia" ) );
+
+            M3n9sZe rIOsS = new M3n9sZe();
+            rIOsS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+            rIOsS.setString( "schemeId" , "19" );
+            outputData.setString( "isActiveInStoreOversea", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOsS ), "isActiveInStoreOversea" ).getString( "isActiveInStoreOversea" ) );
+        }
+
+        return outputData;
+    }
+
+    private M3n9sZe checkStatus ( M3n9sZe inputData, String sKey ) {
+        M3n9sZe outputData = new M3n9sZe();
+
+        if ( inputData == null )
+            outputData.setString( sKey, "Y");
+
+        return  outputData;
     }
 
     private M3n9sZe retrieveCardFreezeStatus( M3n9sZe inputData ) {

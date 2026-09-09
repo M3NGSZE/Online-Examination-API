@@ -25,4 +25,43 @@
 
     </select>
 
+    <select id="retrieveCardFreezeStatusByCardId"
+            parameterType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe"
+            resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
+
+        SELECT
+              CF.FREEZE_ID     AS "freezeId"
+            , CF.CARD_ID       AS "cardId"
+            , CF.CARD_NUMBER   AS "cardNumber"
+            , CF.USER_ID       AS "userId"
+            , CF.SCHEME_ID     AS "schemeId"
+            , CF.REMARK        AS "remark"
+            , CF.CREATED_AT    AS "createdAt"
+            , CF.UPDATED_AT    AS "updatedAt"
+        FROM CARD_FREEZE CF
+        WHERE CR.CARD_ID = #{cardId}
+
+    </select>
+
+    <select id="retrieveCardRestrictionByCardNumberAndSchemeId"
+            parameterType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe"
+            resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
+
+        SELECT
+              CR.RESTRICTION_ID     AS "restrictionId"
+            , CR.CARD_ID            AS "cardId"
+            , CR.CARD_NUMBER        AS "cardNumber"
+            , CR.USER_ID            AS "userId"
+            , CR.SCHEME_ID          AS "schemeId"
+            , CR.REMARK             AS "remark"
+            , CR.FROM_DATE          AS "fromDate"
+            , CR.TO_DATE            AS "toDate"
+            , CR.CREATED_AT         AS "createdAt"
+            , CR.UPDATED_AT         AS "updatedAT"
+        FROM CARD_RESTRICTION CR
+        WHERE CR.CARD_NUMBER = #{cardNumber}
+        AND CR.SCHEME_ID     = #{schemeId}
+
+    </select>
+
 </mapper>
