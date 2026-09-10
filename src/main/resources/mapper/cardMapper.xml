@@ -39,7 +39,7 @@
             , CF.CREATED_AT    AS "createdAt"
             , CF.UPDATED_AT    AS "updatedAt"
         FROM CARD_FREEZE CF
-        WHERE CR.CARD_ID = #{cardId}
+        WHERE CF.CARD_ID = #{cardId}
 
     </select>
 

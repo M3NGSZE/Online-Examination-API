@@ -187,6 +187,7 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
+//        M3n9sZe a = cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS );
         outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
 
         M3n9sZe rIOS = new M3n9sZe();
@@ -217,16 +218,18 @@ public class ReserveServiceImpl implements ReserveService {
     private M3n9sZe checkStatus ( M3n9sZe inputData, M3n9sZe inputParam, String sKey ) {
         M3n9sZe outputData = new M3n9sZe();
 
-        int toDate = Integer.parseInt( inputParam.getString("toDate" ) );
-        int expireDate = Integer.parseInt( inputParam.getString("expireDate" ) );
+        if ( inputData != null ) {
+            int toDate = Integer.parseInt( inputData.getString("toDate" ) );
+            int expireDate = Integer.parseInt( inputParam.getString("expireDate" ) );
 
-        if ( inputData == null )
+            if ( toDate >= expireDate )
+                outputData.setString( sKey, "N" );
+            else
+                outputData.setString( sKey, "Y" );
+        }
+        else
             outputData.setString( sKey, "Y");
 
-        if ( toDate >= expireDate )
-            outputData.setString( sKey, "N" );
-        else
-            outputData.setString( sKey, "Y" );
 
         return  outputData;
     }
@@ -234,7 +237,7 @@ public class ReserveServiceImpl implements ReserveService {
     private M3n9sZe checkFreezeCard( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
 
-        M3n9sZe cardFreeze = cardMapper.retrieveCardInfoByCardId( inputData );
+        M3n9sZe cardFreeze = cardMapper.retrieveCardFreezeStatusByCardId( inputData );
         if ( cardFreeze == null)
             throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
