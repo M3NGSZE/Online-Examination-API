@@ -9,7 +9,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.PaginationResponse
 import com.m3ngsze.sentry.onlineexaminationapi.repository.UserRepository;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.RoomOwnerService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
-import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.model.mapper.UserMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

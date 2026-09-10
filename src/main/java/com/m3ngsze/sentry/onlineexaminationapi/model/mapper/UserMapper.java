@@ -1,4 +1,4 @@
-package com.m3ngsze.sentry.onlineexaminationapi.mapper;
+package com.m3ngsze.sentry.onlineexaminationapi.model.mapper;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.model.dto.UserDTO;

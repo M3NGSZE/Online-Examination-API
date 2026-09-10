@@ -22,7 +22,7 @@ import com.m3ngsze.sentry.onlineexaminationapi.service.business.RedisService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.TokenService;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.UserService;
 import com.m3ngsze.sentry.onlineexaminationapi.specification.UserSpecification;
-import com.m3ngsze.sentry.onlineexaminationapi.mapper.UserMapper;
+import com.m3ngsze.sentry.onlineexaminationapi.model.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
