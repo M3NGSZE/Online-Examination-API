@@ -3,7 +3,6 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper;
-import com.m3ngsze.sentry.onlineexaminationapi.mapper.M3n9seMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.model.card.CardType;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe;
 import com.m3ngsze.sentry.onlineexaminationapi.model.data.SentryData;
@@ -14,7 +13,6 @@ import com.m3ngsze.sentry.onlineexaminationapi.model.response.ListResponse;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.RoomCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.common.UserCommon;
 import com.m3ngsze.sentry.onlineexaminationapi.service.business.ReserveService;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -187,25 +185,28 @@ public class ReserveServiceImpl implements ReserveService {
         if ( cardInfo == null ) throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
         M3n9sZe rOCS = new M3n9sZe();
-        rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+        rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
         outputData.setString( "isActiveOnlineCambodia", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), "isActiveOnlineCambodia" ).getString( "isActiveOnlineCambodia" ) );
 
         M3n9sZe rIOS = new M3n9sZe();
-        rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+        rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rIOS.setString( "schemeId" , "17" );
         outputData.setString( "isActiveOnlineOversea", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOS ), "isActiveOnlineOversea" ).getString( "isActiveOnlineOversea" ) );
 
         if ( !cardInfo.getString( "cardType" ).equals( CardType.VIRTUAL.toString() ) ) {
             M3n9sZe rICS = new M3n9sZe();
-            rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+            rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
             rICS.setString( "schemeId" , "18" );
             outputData.setString( "isActiveInStoreCambodia", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rICS ), "isActiveInStoreCambodia" ).getString( "isActiveInStoreCambodia" ) );
 
             M3n9sZe rIOsS = new M3n9sZe();
-            rIOsS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ));
+            rIOsS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
             rIOsS.setString( "schemeId" , "19" );
             outputData.setString( "isActiveInStoreOversea", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOsS ), "isActiveInStoreOversea" ).getString( "isActiveInStoreOversea" ) );
+        } else {
+            outputData.setString( "isActiveInStoreCambodia", "N" );
+            outputData.setString( "isActiveInStoreOversea", "N" );
         }
 
         return outputData;
