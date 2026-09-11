@@ -15,4 +15,6 @@ public interface ReserveService {
 
     M3n9sZe restrictionAndFreeze ( M3n9sZe requestBody );
 
+    M3n9sZe inquiryCardRestrictionStatus ( M3n9sZe requestBody );
+
 }

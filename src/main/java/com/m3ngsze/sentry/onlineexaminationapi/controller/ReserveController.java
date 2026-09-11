@@ -94,4 +94,19 @@ public class ReserveController {
         );
     }
 
+    @PostMapping( "/" )
+    @PreAuthorize( "hasRole('ROLE_USER')" )
+    @Operation(
+            summary = "Unrelated wit examination system",
+            description = "Restriction and Freeze Card"
+    )
+    public ResponseEntity< ApiResponse < M3n9sZe > > retrieveCardRestrictionStatus ( @RequestBody M3n9sZe requestBody ) {
+        return ResponseEntity.ok( ApiResponse.<M3n9sZe>builder()
+                .message( "Cards restriction status have been successfully fetched" )
+                .payload( reserveService.inquiryCardRestrictionStatus( requestBody ) )
+                .status( HttpStatus.OK)
+                .build()
+        );
+    }
+
 }

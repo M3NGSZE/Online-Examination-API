@@ -125,6 +125,11 @@ public class ReserveServiceImpl implements ReserveService {
         return outputData;
     }
 
+    @Override
+    public M3n9sZe inquiryCardRestrictionStatus(M3n9sZe requestBody) {
+        return null;
+    }
+
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
         return null;
     }
