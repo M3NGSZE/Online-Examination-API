@@ -131,6 +131,9 @@ public class ReserveServiceImpl implements ReserveService {
         SentryData cardList = new SentryData();
 
         for ( M3n9sZe card: requestBody.getSentryData( "cardList" ).toArrayList() ) {
+
+            validate( card, "cardId");
+
             M3n9sZe cardStatus = retrieveCardStatus( card );
             cardList.add( cardStatus );
         }
@@ -184,6 +187,14 @@ public class ReserveServiceImpl implements ReserveService {
             if ( param.containsKey( key ) && param.getString( key ).isEmpty() ) {
                 throw new BadRequestException( key + " field is empty");
             }
+        }
+    }
+    private void validate( M3n9sZe param, String... sKey ) {
+        for (String key: sKey ) {
+            if ( !param.containsKey( key ) )
+                throw new BadRequestException( "Missing field " + key );
+            else if ( param.getString( key ).isEmpty() )
+                throw new BadRequestException( key + " field is empty" );
         }
     }
 
