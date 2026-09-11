@@ -127,7 +127,17 @@ public class ReserveServiceImpl implements ReserveService {
 
     @Override
     public M3n9sZe inquiryCardRestrictionStatus(M3n9sZe requestBody) {
-        return null;
+        M3n9sZe outputData = new M3n9sZe();
+        SentryData cardList = new SentryData();
+
+        for ( M3n9sZe card: requestBody.getSentryData( "cardList" ).toArrayList() ) {
+            M3n9sZe cardStatus = retrieveCardStatus( card );
+            cardList.add( cardStatus );
+        }
+
+        outputData.setSentryData( "cardList" , cardList );
+
+        return outputData;
     }
 
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
@@ -192,7 +202,6 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
-//        M3n9sZe a = cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS );
         outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
 
         M3n9sZe rIOS = new M3n9sZe();

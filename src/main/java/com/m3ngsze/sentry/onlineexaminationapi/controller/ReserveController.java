@@ -94,7 +94,7 @@ public class ReserveController {
         );
     }
 
-    @PostMapping( "/" )
+    @PostMapping( "/cardStatus" )
     @PreAuthorize( "hasRole('ROLE_USER')" )
     @Operation(
             summary = "Unrelated wit examination system",
