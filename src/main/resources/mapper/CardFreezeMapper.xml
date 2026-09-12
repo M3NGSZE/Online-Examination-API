@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.m3ngsze.sentry.onlineexaminationapi.mapper.CardFreezeMapper">
+
+    <select id="retrieveCardFreezeStatusByCardId"
+            parameterType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe"
+            resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
+
+        SELECT
+        CF.FREEZE_ID     AS "freezeId"
+        , CF.CARD_ID       AS "cardId"
+        , CF.CARD_NUMBER   AS "cardNumber"
+        , CF.USER_ID       AS "userId"
+        , CF.SCHEME_ID     AS "schemeId"
+        , CF.REMARK        AS "remark"
+        , CF.CREATED_AT    AS "createdAt"
+        , CF.UPDATED_AT    AS "updatedAt"
+        FROM CARD_FREEZE CF
+        WHERE CF.CARD_ID = #{cardId}
+
+    </select>
+
+</mapper>

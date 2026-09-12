@@ -2,6 +2,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.service.business.impl;
 
 import com.m3ngsze.sentry.onlineexaminationapi.exception.BadRequestException;
 import com.m3ngsze.sentry.onlineexaminationapi.exception.NotFoundException;
+import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardFreezeMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.mapper.CardRestrictionMapper;
 import com.m3ngsze.sentry.onlineexaminationapi.model.card.CardType;
@@ -32,6 +33,7 @@ public class ReserveServiceImpl implements ReserveService {
 
     private final CardMapper cardMapper;
     private final CardRestrictionMapper cardRestrictionMapper;
+    private final CardFreezeMapper cardFreezeMapper;
 
     @Override
     public ListResponse<RoomDTO> getUserJoinedRooms(Integer page, Integer size, String search, Sort.Direction sort) {
@@ -366,7 +368,7 @@ public class ReserveServiceImpl implements ReserveService {
     private M3n9sZe checkFreezeCard( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
 
-        M3n9sZe cardFreeze = cardMapper.retrieveCardFreezeStatusByCardId( inputData );
+        M3n9sZe cardFreeze = cardFreezeMapper.retrieveCardFreezeStatusByCardId( inputData );
         if ( cardFreeze == null)
             throw new NotFoundException( "Card with id: " + inputData.getString( "cardId" ) + " not found" );
 
