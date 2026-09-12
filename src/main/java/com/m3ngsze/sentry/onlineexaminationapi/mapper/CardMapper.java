@@ -10,5 +10,4 @@ public interface CardMapper {
 
     M3n9sZe retrieveCardFreezeStatusByCardId ( M3n9sZe param );
 
-    M3n9sZe retrieveCardRestrictionByCardNumberAndSchemeId ( M3n9sZe param );
 }

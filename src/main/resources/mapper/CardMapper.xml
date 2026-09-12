@@ -43,25 +43,4 @@
 
     </select>
 
-    <select id="retrieveCardRestrictionByCardNumberAndSchemeId"
-            parameterType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe"
-            resultType="com.m3ngsze.sentry.onlineexaminationapi.model.data.M3n9sZe">
-
-        SELECT
-              CR.RESTRICTION_ID     AS "restrictionId"
-            , CR.CARD_ID            AS "cardId"
-            , CR.CARD_NUMBER        AS "cardNumber"
-            , CR.USER_ID            AS "userId"
-            , CR.SCHEME_ID          AS "schemeId"
-            , CR.REMARK             AS "remark"
-            , CR.FROM_DATE          AS "fromDate"
-            , CR.TO_DATE            AS "toDate"
-            , CR.CREATED_AT         AS "createdAt"
-            , CR.UPDATED_AT         AS "updatedAT"
-        FROM CARD_RESTRICTION CR
-        WHERE CR.CARD_NUMBER = #{cardNumber}
-        AND CR.SCHEME_ID     = #{schemeId}
-
-    </select>
-
 </mapper>
