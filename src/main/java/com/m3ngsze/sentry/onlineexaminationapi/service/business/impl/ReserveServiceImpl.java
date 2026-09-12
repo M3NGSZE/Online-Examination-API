@@ -95,12 +95,13 @@ public class ReserveServiceImpl implements ReserveService {
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
         M3n9sZe outputData = new M3n9sZe();
         SentryData cardList = new SentryData();
+
         M3n9sZe acquireCards = separateCard( requestBody );
 
         for ( M3n9sZe card: acquireCards.getSentryData( "cardList" ).toArrayList() ) {
-            if ( card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
+            if ( card.containsKey( "isRestrict" ) && card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
                 M3n9sZe tCard = processRestrictCard( card );
-                if ( card.getString( "FreezeYN" ).equalsIgnoreCase( "Y" ) ) {
+                if ( card.containsKey( "isInclude" ) && card.getString( "isInclude" ).equalsIgnoreCase( "Y" ) ) {
                     cardList.add( tCard );
                 }
             }
@@ -115,12 +116,6 @@ public class ReserveServiceImpl implements ReserveService {
         }
 
         outputData.setSentryData( "cardList" , cardList );
-
-        /*for ( M3n9sZe card: requestBody.getSentryData( "cardList").toArrayList() ) {
-            cardList.add( retrieveCardStatus( card ) );
-        }
-
-        outputData.setSentryData( "cardList" , cardList );*/
 
         return outputData;
     }
@@ -170,24 +165,36 @@ public class ReserveServiceImpl implements ReserveService {
 
                 M3n9sZe tCard = restrictionToFreeze( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
 
-                if ( tCard.containsKey( "isFreezeYN" ) ) {
-
-                } else if ( tCard.containsKey( "isFreezeYN" ) ) {
+                if ( tCard.containsKey( "isFreezeYN" ) && tCard.getString( "isFreezeYN" ).equalsIgnoreCase( "Y" ) ) {
+                    modifyField( tCard, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
+                    card.setString( "isRestrict", "Y");
+                    cardList.add( tCard );
+                } else if ( !tCard.containsKey( "isFreezeYN" ) ) {
+                    card.setString( "isRestrict", "Y");
+                    card.setString( "isInclude", "Y" );
                     cardList.add( card );
                 }
             }
 
             if ( card.containsKey( "freezeYN" ) ) {
                 validateField( card, "freezeYN" );
-                card.setString( "isFreezeYN" , card.getString( "freezeYN" ) );
 
-                cardList.add( card );
+                if ( checkFreezeCard ( card ).getString( "isFreezeCardYN" ).equalsIgnoreCase( "N" ) ) {
+                    card.setString( "isFreezeYN" , card.getString( "freezeYN" ) );
+                    cardList.add( card );
+                }
             }
         }
 
         outputData.setSentryData( "cardList", cardList );
 
         return outputData;
+    }
+
+    private void modifyField ( M3n9sZe inputData, String... sKey ) {
+        for ( String key: sKey ) {
+            inputData.setString( key, "N" );
+        }
     }
 
     private void validateField( M3n9sZe param, String... sKey ) {
