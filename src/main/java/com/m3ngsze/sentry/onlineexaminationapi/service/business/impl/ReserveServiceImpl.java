@@ -135,6 +135,8 @@ public class ReserveServiceImpl implements ReserveService {
             validate( card, "cardId");
 
             M3n9sZe cardStatus = retrieveCardStatus( card );
+            cardStatus.remove( "isVirtual" );
+            cardStatus.setString( "cardId" , card.getString( "cardId" ) );
             cardList.add( cardStatus );
         }
 
@@ -199,12 +201,37 @@ public class ReserveServiceImpl implements ReserveService {
     }
 
     private M3n9sZe restrictionToFreeze( M3n9sZe inputData, String... sKey ) {
+        M3n9sZe outputData = new M3n9sZe();
+
+        M3n9sZe cardStatus = retrieveCardStatus( inputData );
+        M3n9sZe checkByParam = paramCheck( inputData, cardStatus , sKey );
 
         return null;
     }
 
+    private M3n9sZe paramCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
+        M3n9sZe outputData = new M3n9sZe();
+        int X = 0;
+        int Y = 0;
+
+        for ( String key: sKey ) {
+            if ( inputParam.getString( "cardType" ).equalsIgnoreCase( "N" ) && inputData.containsKey( key ) && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+                Y += 1;
+            else if ( inputParam.getString( "cardType" ).equalsIgnoreCase( "Y" ) && inputData.containsKey( key ) && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+                X += 1;
+        }
+
+        if ( X >= 2 || Y >= 4) {
+            outputData.setString( "isFreezeYN", "Y" );
+            outputData.setString( "isCheckYN", "N" );
+        }
+
+        return outputData;
+    }
+
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
+        String isVirtual = "Y";
 
         M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
 
@@ -221,6 +248,7 @@ public class ReserveServiceImpl implements ReserveService {
         outputData.setString( "isActiveOnlineOverseaYN", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOS ), cardInfo, "isActiveOnlineOverseaYN" ).getString( "isActiveOnlineOverseaYN" ) );
 
         if ( !cardInfo.getString( "cardType" ).equals( CardType.VIRTUAL.toString() ) ) {
+            isVirtual = "N";
             M3n9sZe rICS = new M3n9sZe();
             rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
             rICS.setString( "schemeId" , "18" );
@@ -236,6 +264,7 @@ public class ReserveServiceImpl implements ReserveService {
         }
 
         outputData.setString( "isFreezeCardYN", checkFreezeCard( inputData ).getString( "isFreezeCardYN" ) );
+        outputData.setString( "isVirtual", isVirtual );
 
         return outputData;
     }
