@@ -95,7 +95,7 @@ public class ReserveServiceImpl implements ReserveService {
     public M3n9sZe restrictionAndFreeze( M3n9sZe requestBody ) {
         M3n9sZe outputData = new M3n9sZe();
         SentryData cardList = new SentryData();
-        /*M3n9sZe acquireCards = separateCard( requestBody );
+        M3n9sZe acquireCards = separateCard( requestBody );
 
         for ( M3n9sZe card: acquireCards.getSentryData( "cardList" ).toArrayList() ) {
             if ( card.getString( "isRestrict" ).equalsIgnoreCase( "Y" ) ) {
@@ -114,13 +114,13 @@ public class ReserveServiceImpl implements ReserveService {
             cardList.add( tCard );
         }
 
-        outputData.setSentryData( "cardList" , cardList );*/
+        outputData.setSentryData( "cardList" , cardList );
 
-        for ( M3n9sZe card: requestBody.getSentryData( "cardList").toArrayList() ) {
+        /*for ( M3n9sZe card: requestBody.getSentryData( "cardList").toArrayList() ) {
             cardList.add( retrieveCardStatus( card ) );
         }
 
-        outputData.setSentryData( "cardList" , cardList );
+        outputData.setSentryData( "cardList" , cardList );*/
 
         return outputData;
     }
@@ -164,11 +164,17 @@ public class ReserveServiceImpl implements ReserveService {
             if ( card.containsKey( "restrictOnlineCambodia" ) || card.containsKey( "restrictOnlineOversea" ) ||
                 card.containsKey( "restrictInStoreCambodia" ) || card.containsKey( "restrictInStoreOversea" ) ) {
 
+                validate( card, "cardId", "expiredDate" );
+
                 validateField( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
 
                 M3n9sZe tCard = restrictionToFreeze( card, "restrictOnlineCambodia", "restrictOnlineOversea", "restrictInStoreCambodia", "restrictInStoreOversea" );
 
-                cardList.add( card );
+                if ( tCard.containsKey( "isFreezeYN" ) ) {
+
+                } else if ( tCard.containsKey( "isFreezeYN" ) ) {
+                    cardList.add( card );
+                }
             }
 
             if ( card.containsKey( "freezeYN" ) ) {
@@ -204,27 +210,87 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe outputData = new M3n9sZe();
 
         M3n9sZe cardStatus = retrieveCardStatus( inputData );
-        M3n9sZe checkByParam = paramCheck( inputData, cardStatus , sKey );
 
-        return null;
+        if ( cardStatus.getString("isFreezeCardYN" ).equalsIgnoreCase( "N" ) ) {
+            M3n9sZe checkByParam = paramCheck( inputData, cardStatus , sKey );
+
+            if ( checkByParam.getString( "isCheckYN" ).equalsIgnoreCase( "Y" ) ) {
+                M3n9sZe mapFieldYN = mapField( cardStatus );
+                outputData = inquiryCheck( inputData, mapFieldYN, sKey);
+            } else {
+                checkByParam.remove( "isCheckYN" );
+                outputData = checkByParam;
+            }
+
+        } else {
+            outputData.setString( "isFreezeCardYN", "Y" );
+        }
+
+        outputData.setString( "cardId", inputData.getString( "cardId" ) );
+
+        return outputData;
     }
 
     private M3n9sZe paramCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
         M3n9sZe outputData = new M3n9sZe();
         int X = 0;
         int Y = 0;
+        String isCheckYN = "N";
 
         for ( String key: sKey ) {
-            if ( inputParam.getString( "cardType" ).equalsIgnoreCase( "N" ) && inputData.containsKey( key ) && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+            if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "N" ) && inputData.containsKey( key )
+                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
                 Y += 1;
-            else if ( inputParam.getString( "cardType" ).equalsIgnoreCase( "Y" ) && inputData.containsKey( key ) && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+            else if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "Y" ) && inputData.containsKey( key )
+                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
                 X += 1;
         }
 
-        if ( X >= 2 || Y >= 4) {
+        if ( X >= 2 || Y >= 4 ) {
+            isCheckYN = "Y";
             outputData.setString( "isFreezeYN", "Y" );
-            outputData.setString( "isCheckYN", "N" );
+            outputData.setString( "isCheckYN", isCheckYN );
+        } else
+            outputData.setString( "isCheckYN", isCheckYN );
+
+        return outputData;
+    }
+
+    private M3n9sZe inquiryCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
+        M3n9sZe outputData = new M3n9sZe();
+        int X = 0;
+
+        for ( String key: sKey ) {
+            if ( inputParam.getString( "isVirtualYN" ).matches("[YN]" ) &&
+                    inputData.containsKey( key ) && inputData.getString( key).equalsIgnoreCase( "Y" ) )
+                X += 1;
+
+            if ( inputParam.getString( key ).equalsIgnoreCase( "N" ) )
+                X += 1;
         }
+
+        if ( X >= 4 )
+            outputData.setString( "isFreezeYN", "Y" );
+
+        return outputData;
+    }
+
+    private M3n9sZe mapField( M3n9sZe inputData ) {
+        M3n9sZe outputData = new M3n9sZe();
+
+        if ( inputData.containsKey( "isActiveOnlineCambodiaYN" ) )
+            outputData.setString( "restrictOnlineCambodia", inputData.getString( "isActiveOnlineCambodiaYN" ) );
+
+        if ( inputData.containsKey( "isActiveOnlineOverseaYN" ) )
+            outputData.setString( "restrictOnlineOversea", inputData.getString( "isActiveOnlineOverseaYN" ) );
+
+        if ( inputData.containsKey( "isActiveInStoreCambodiaYN" ) )
+            outputData.setString( "restrictInStoreCambodia", inputData.getString( "isActiveInStoreCambodiaYN" ) );
+
+        if ( inputData.containsKey( "isActiveInStoreOverseaYN" ) )
+            outputData.setString( "restrictInStoreOversea", inputData.getString( "isActiveInStoreOverseaYN" ) );
+
+        outputData.setString( "isVirtual", inputData.getString( "isVirtual" ) );
 
         return outputData;
     }
@@ -240,7 +306,7 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
-        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
+        outputData.setString( "isActiveOnlineCambodia", checkStatus ( cardMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
 
         M3n9sZe rIOS = new M3n9sZe();
         rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
