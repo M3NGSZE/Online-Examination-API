@@ -3,6 +3,7 @@ package com.m3ngsze.sentry.onlineexaminationapi.model.data;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /*
 *   custom class use for request and response body
@@ -23,6 +24,10 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
 
     public void setSentryData( String key, SentryData value ) {
         put( key, value);
+    }
+
+    public void setUUID(String key, UUID value) {
+        put(key, value);
     }
 
     /*

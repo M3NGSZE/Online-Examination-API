@@ -20,7 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import static com.m3ngsze.sentry.onlineexaminationapi.specification.RoomSpecification.*;
 
@@ -146,48 +149,104 @@ public class ReserveServiceImpl implements ReserveService {
 
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
+        outputData.setString( "carId" , inputData.getString( "carId" ) );
 
         if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
             M3n9sZe rOCS = new M3n9sZe();
-            String label = inputData.getString( "restrictOnlineCambodia" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+            String label;
+
+            if ( inputData.getString("restrictOnlineCambodia").equalsIgnoreCase("Y") ) {
+                outputData.setString( "applyRestrictOnlineCambodia", "Y" );
+                label = "add";
+            } else {
+                outputData.setString( "removeRestrictOnlineCambodia", "Y" );
+                label = "remove";
+            }
 
             rOCS.setString( "schemeId", "16" );
             rOCS.setString( "remark", label + " restriction online purchase cambodia" );
-            M3n9sZe rOC = insertAndUpdateRestriction( rOCS );
+            insertAndUpdateRestriction( rOCS );
         }
 
         if ( inputData.containsKey( "restrictOnlineOversea" ) && inputData.getString( "restrictOnlineOversea" ).matches("[YN]" ) ) {
             M3n9sZe rOOS = new M3n9sZe();
-            String label = inputData.getString( "restrictOnlineOversea" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+            String label;
+
+            if ( inputData.getString("restrictOnlineOversea").equalsIgnoreCase("Y") ) {
+                outputData.setString( "applyRestrictOnlineOversea", "Y" );
+                label = "add";
+            } else {
+                outputData.setString( "removeRestrictOnlineOversea", "Y" );
+                label = "remove";
+            }
 
             rOOS.setString( "schemeId", "17" );
             rOOS.setString( "remark", label + " restriction online purchase oversea" );
-            M3n9sZe rOC = insertAndUpdateRestriction( rOOS );
+            insertAndUpdateRestriction( rOOS );
         }
 
         if ( inputData.containsKey( "restrictInStoreCambodia" ) && inputData.getString( "restrictInStoreCambodia" ).matches("[YN]" ) ) {
             M3n9sZe rICS = new M3n9sZe();
-            String label = inputData.getString( "restrictInStoreCambodia" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+            String label;
+
+            if ( inputData.getString("restrictInStoreCambodia").equalsIgnoreCase("Y") ) {
+                outputData.setString( "applyRestrictInStoreCambodia", "Y" );
+                label = "add";
+            } else {
+                outputData.setString( "removeRestrictInStoreCambodia", "Y" );
+                label = "remove";
+            }
 
             rICS.setString( "schemeId", "18" );
             rICS.setString( "remark", label + " restriction in-store purchase cambodia" );
-            M3n9sZe rOC = insertAndUpdateRestriction( rICS );
+            insertAndUpdateRestriction( rICS );
         }
 
         if ( inputData.containsKey( "restrictInStoreOversea" ) && inputData.getString( "restrictInStoreOversea" ).matches("[YN]" ) ) {
             M3n9sZe rIOS = new M3n9sZe();
-            String label = inputData.getString( "restrictInStoreOversea" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+            String label;
+
+            if ( inputData.getString("restrictInStoreOversea").equalsIgnoreCase("Y") ) {
+                outputData.setString( "applyRestrictInStoreOversea", "Y" );
+                label = "add";
+            } else {
+                outputData.setString( "removeRestrictInStoreOversea", "Y" );
+                label = "remove";
+            }
 
             rIOS.setString( "schemeId", "19" );
             rIOS.setString( "remark", label + " restriction in-store purchase oversea" );
-            M3n9sZe rOC = insertAndUpdateRestriction( rIOS );
+            insertAndUpdateRestriction( rIOS );
         }
 
-        return null;
+        return outputData;
     }
 
-    private M3n9sZe insertAndUpdateRestriction ( M3n9sZe inputData ) {
-        return null;
+    private void insertAndUpdateRestriction ( M3n9sZe inputData ) {
+
+        M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
+
+        M3n9sZe cardRestriction = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( inputData );
+
+        if ( cardRestriction == null ) {
+            M3n9sZe insert = new M3n9sZe();
+            insert.setUUID( "restrictionId", UUID.randomUUID() );
+            insert.setString( "cardId", insert.getString( "cardId" ) );
+            insert.setString( "cardNumber", cardInfo.getString( "cardNumber" ) );
+            insert.setString( "userId", cardInfo.getString( "userId" ) );
+            insert.setString( "schemeId", inputData.getString( "schemeId" ) );
+            insert.setString( "remark", inputData.getString( "remark" ) );
+            insert.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) );
+            insert.setString( "toDate", cardInfo.getString( "expiredDate" ) );
+
+            cardRestrictionMapper.insertRestrictionCard( insert );
+        } else {
+            cardRestriction.setString( "remark", inputData.getString( "remark" ) );
+            cardRestriction.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
+            cardRestriction.setString( "fromDate", LocalDate.now().minusDays( 1 ).format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
+
+            cardRestrictionMapper.updateRestrictionCard( cardRestriction );
+        }
     }
 
     private M3n9sZe processFreezeCard( M3n9sZe inputData ) {

@@ -8,4 +8,8 @@ public interface CardRestrictionMapper {
 
     M3n9sZe retrieveCardRestrictionByCardNumberAndSchemeId (M3n9sZe param );
 
+    void insertRestrictionCard ( M3n9sZe param );
+
+    void updateRestrictionCard ( M3n9sZe param );
+
 }
