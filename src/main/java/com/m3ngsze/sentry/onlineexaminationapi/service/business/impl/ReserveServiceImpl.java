@@ -149,26 +149,38 @@ public class ReserveServiceImpl implements ReserveService {
 
         if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
             M3n9sZe rOCS = new M3n9sZe();
+            String label = inputData.getString( "restrictOnlineCambodia" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+
             rOCS.setString( "schemeId", "16" );
-            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+            rOCS.setString( "remark", label + " restriction online purchase cambodia" );
+            M3n9sZe rOC = insertAndUpdateRestriction( rOCS );
         }
 
-        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
-            M3n9sZe rOCS = new M3n9sZe();
-            rOCS.setString( "schemeId", "16" );
-            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        if ( inputData.containsKey( "restrictOnlineOversea" ) && inputData.getString( "restrictOnlineOversea" ).matches("[YN]" ) ) {
+            M3n9sZe rOOS = new M3n9sZe();
+            String label = inputData.getString( "restrictOnlineOversea" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+
+            rOOS.setString( "schemeId", "17" );
+            rOOS.setString( "remark", label + " restriction online purchase oversea" );
+            M3n9sZe rOC = insertAndUpdateRestriction( rOOS );
         }
 
-        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
-            M3n9sZe rOCS = new M3n9sZe();
-            rOCS.setString( "schemeId", "16" );
-            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        if ( inputData.containsKey( "restrictInStoreCambodia" ) && inputData.getString( "restrictInStoreCambodia" ).matches("[YN]" ) ) {
+            M3n9sZe rICS = new M3n9sZe();
+            String label = inputData.getString( "restrictInStoreCambodia" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+
+            rICS.setString( "schemeId", "18" );
+            rICS.setString( "remark", label + " restriction in-store purchase cambodia" );
+            M3n9sZe rOC = insertAndUpdateRestriction( rICS );
         }
 
-        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
-            M3n9sZe rOCS = new M3n9sZe();
-            rOCS.setString( "schemeId", "16" );
-            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        if ( inputData.containsKey( "restrictInStoreOversea" ) && inputData.getString( "restrictInStoreOversea" ).matches("[YN]" ) ) {
+            M3n9sZe rIOS = new M3n9sZe();
+            String label = inputData.getString( "restrictInStoreOversea" ).equalsIgnoreCase( "Y" ) ? "Add" : "remove";
+
+            rIOS.setString( "schemeId", "19" );
+            rIOS.setString( "remark", label + " restriction in-store purchase oversea" );
+            M3n9sZe rOC = insertAndUpdateRestriction( rIOS );
         }
 
         return null;
