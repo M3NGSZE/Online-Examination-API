@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
@@ -238,12 +239,15 @@ public class ReserveServiceImpl implements ReserveService {
             insert.setString( "remark", inputData.getString( "remark" ) );
             insert.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) );
             insert.setString( "toDate", cardInfo.getString( "expiredDate" ) );
+            insert.setLocalDateTime( "createdAt", LocalDateTime.now() );
+            insert.setLocalDateTime( "updatedAt", LocalDateTime.now() );
 
             cardRestrictionMapper.insertRestrictionCard( insert );
         } else {
             cardRestriction.setString( "remark", inputData.getString( "remark" ) );
             cardRestriction.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
             cardRestriction.setString( "fromDate", LocalDate.now().minusDays( 1 ).format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
+            cardRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
 
             cardRestrictionMapper.updateRestrictionCard( cardRestriction );
         }

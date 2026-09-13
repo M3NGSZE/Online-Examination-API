@@ -1,5 +1,6 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.data;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,10 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
 
     public void setUUID(String key, UUID value) {
         put(key, value);
+    }
+
+    public void setLocalDateTime(String key, LocalDateTime value ) {
+        put( key, value);
     }
 
     /*
