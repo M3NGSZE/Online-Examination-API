@@ -145,6 +145,36 @@ public class ReserveServiceImpl implements ReserveService {
     }
 
     private M3n9sZe processRestrictCard( M3n9sZe inputData ) {
+        M3n9sZe outputData = new M3n9sZe();
+
+        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
+            M3n9sZe rOCS = new M3n9sZe();
+            rOCS.setString( "schemeId", "16" );
+            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        }
+
+        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
+            M3n9sZe rOCS = new M3n9sZe();
+            rOCS.setString( "schemeId", "16" );
+            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        }
+
+        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
+            M3n9sZe rOCS = new M3n9sZe();
+            rOCS.setString( "schemeId", "16" );
+            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        }
+
+        if ( inputData.containsKey( "restrictOnlineCambodia" ) && inputData.getString( "restrictOnlineCambodia" ).matches("[YN]" ) ) {
+            M3n9sZe rOCS = new M3n9sZe();
+            rOCS.setString( "schemeId", "16" );
+            M3n9sZe rOC = insertAndUpdateRestriction(rOCS );
+        }
+
+        return null;
+    }
+
+    private M3n9sZe insertAndUpdateRestriction ( M3n9sZe inputData ) {
         return null;
     }
 
@@ -238,6 +268,7 @@ public class ReserveServiceImpl implements ReserveService {
         }
 
         outputData.setString( "cardId", inputData.getString( "cardId" ) );
+        outputData.setString( "isVirtual", cardStatus.getString( "isVirtual" ) );
 
         return outputData;
     }
@@ -360,7 +391,6 @@ public class ReserveServiceImpl implements ReserveService {
         }
         else
             outputData.setString( sKey, "Y");
-
 
         return  outputData;
     }
