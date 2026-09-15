@@ -10,6 +10,8 @@ public interface CardRestrictionMapper {
 
     void insertRestrictionCard ( M3n9sZe param );
 
-    void updateRestrictionCard ( M3n9sZe param );
+    void updateRemoveRestrictionCard ( M3n9sZe param );
+
+    void updateReapplyRestrictionCard ( M3n9sZe param );
 
 }

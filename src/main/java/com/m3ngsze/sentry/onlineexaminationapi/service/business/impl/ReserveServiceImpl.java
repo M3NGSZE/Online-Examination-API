@@ -226,10 +226,12 @@ public class ReserveServiceImpl implements ReserveService {
     private void insertAndUpdateRestriction ( M3n9sZe inputData ) {
 
         M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
+        boolean isUpdate = true;
 
         M3n9sZe cardRestriction = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( inputData );
 
         if ( cardRestriction == null ) {
+            isUpdate = false;
             M3n9sZe insert = new M3n9sZe();
             insert.setUUID( "restrictionId", UUID.randomUUID() );
             insert.setString( "cardId", insert.getString( "cardId" ) );
@@ -243,14 +245,37 @@ public class ReserveServiceImpl implements ReserveService {
             insert.setLocalDateTime( "updatedAt", LocalDateTime.now() );
 
             cardRestrictionMapper.insertRestrictionCard( insert );
-        } else {
-            cardRestriction.setString( "remark", inputData.getString( "remark" ) );
-            cardRestriction.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
-            cardRestriction.setString( "fromDate", LocalDate.now().minusDays( 1 ).format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
-            cardRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
-
-            cardRestrictionMapper.updateRestrictionCard( cardRestriction );
         }
+
+        if ( isUpdate ) {
+            if ( ( inputData.containsKey( "restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase( "N" ) ) ||
+                 ( inputData.containsKey( "restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase( "N" ) ) ||
+                 ( inputData.containsKey( "restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase( "N" ) ) ||
+                 ( inputData.containsKey( "restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase( "N" ) ) ) {
+
+                M3n9sZe removeRestriction = new M3n9sZe();
+                removeRestriction.setString( "remark", inputData.getString( "remark" ) );
+                removeRestriction.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
+                removeRestriction.setString( "fromDate", LocalDate.now().minusDays( 1 ).format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
+                removeRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
+
+                cardRestrictionMapper.updateRemoveRestrictionCard( removeRestriction );
+
+            } else if ( ( inputData.containsKey( "restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase( "Y" ) ) ||
+                    ( inputData.containsKey( "restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase( "Y" ) ) ||
+                    ( inputData.containsKey( "restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase( "Y" ) ) ||
+                    ( inputData.containsKey( "restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase( "Y" ) ) ) {
+
+                M3n9sZe reapplyRestriction = new M3n9sZe();
+                reapplyRestriction.setString( "remark", inputData.getString( "remark" ) );
+                reapplyRestriction.setString( "toDate", cardInfo.getString( "expiredDate") );
+                reapplyRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
+
+                cardRestrictionMapper.updateReapplyRestrictionCard( reapplyRestriction );
+            }
+        }
+
+
     }
 
     private M3n9sZe processFreezeCard( M3n9sZe inputData ) {
