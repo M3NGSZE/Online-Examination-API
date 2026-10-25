@@ -1,15 +1,26 @@
 package com.m3ngsze.sentry.onlineexaminationapi.model.data;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /*
 *   custom class use for request and response body
 */
 public class M3n9sZe extends LinkedHashMap< String, Object > {
+
+    /*
+    *   Default Constructor
+    */
+    public M3n9sZe() {
+        super();
+    }
+
+    /*
+     *   Copy Constructor
+     */
+    public M3n9sZe(M3n9sZe inputData) {
+        super( inputData );
+    }
 
     /*
     *   set method use for setting data: new field, key and value
@@ -27,11 +38,11 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
         put( key, value);
     }
 
-    public void setUUID(String key, UUID value) {
+    public void setUUID( String key, UUID value ) {
         put(key, value);
     }
 
-    public void setLocalDateTime(String key, LocalDateTime value ) {
+    public void setLocalDateTime( String key, LocalDateTime value ) {
         put( key, value);
     }
 
@@ -51,20 +62,19 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
         return containsKey( key) ? toSentryData( get( key ) ) : null;
     }
 
-    public M3n9sZe setObject(String key, Object value) {
+    public void setObject(String key, Object value ) {
         put(key, value);
-        return this;
     }
 
     /*
     *   convert object into M3n9sZe object
     */
-    public M3n9sZe toM3n9sZe(Object object) {
-        if (object instanceof M3n9sZe data) {
+    public M3n9sZe toM3n9sZe( Object object ) {
+        if ( object instanceof M3n9sZe data ) {
             return data;
         }
 
-        if (object instanceof Map<?, ?> map) {
+        if ( object instanceof Map<?, ?> map ) {
             M3n9sZe data = new M3n9sZe();
 
             for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -88,7 +98,7 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
      *   convert list object into SentryData object
      */
     public SentryData toSentryData ( Object object ) {
-        switch (object) {
+        switch ( object ) {
             case null -> {
                 return null;
             }
@@ -99,8 +109,8 @@ public class M3n9sZe extends LinkedHashMap< String, Object > {
 
                 SentryData data = new SentryData();
 
-                for (Object item : list) {
-                    data.add(toM3n9sZe(item));
+                for ( Object item : list ) {
+                    data.add( toM3n9sZe( item ) );
                 }
 
                 return data;

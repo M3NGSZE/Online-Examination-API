@@ -134,11 +134,12 @@ public class ReserveServiceImpl implements ReserveService {
         SentryData cardList = new SentryData();
 
         for ( M3n9sZe card: requestBody.getSentryData( "cardList" ).toArrayList() ) {
-
             validate( card, "cardId");
 
+            card.setString( "mRetrieve", "Y" );
             M3n9sZe cardStatus = retrieveCardStatus( card );
             cardStatus.remove( "isVirtual" );
+            cardStatus.remove( "vExistYN" );
             cardStatus.setString( "cardId" , card.getString( "cardId" ) );
             cardList.add( cardStatus );
         }
@@ -354,7 +355,6 @@ public class ReserveServiceImpl implements ReserveService {
         if ( cardStatus.getString("isFreezeCardYN" ).equalsIgnoreCase( "N" ) ) {
             M3n9sZe mapFieldYN = mapField( cardStatus );
             outputData = manipulateField( inputData, mapFieldYN, sKey );
-
         } else {
             outputData.setString( "isFreezeCardYN", "Y" );
         }
@@ -362,17 +362,11 @@ public class ReserveServiceImpl implements ReserveService {
         outputData.setString( "cardId", inputData.getString( "cardId" ) );
         outputData.setString( "isVirtual", cardStatus.getString( "isVirtual" ) );
 
-        int y = 0;
-        if ( y == 0 )
-            throw new BadRequestException( "something");
-
         return outputData;
     }
 
-
-
     private M3n9sZe manipulateField( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
-        M3n9sZe outputData = new M3n9sZe();
+        M3n9sZe outputData = new M3n9sZe( inputData );
         int x = 0;
 
         for ( String key: sKey ) {
@@ -385,6 +379,11 @@ public class ReserveServiceImpl implements ReserveService {
 
         if ( x >= 4 )
             outputData.setString( "isFreezeYN", "Y" );
+
+        if ( inputParam.containsKey( "vExistYN" ) && inputParam.getString( "vExistYN" ).equalsIgnoreCase( "N" ) ) {
+            outputData.put( "restrictInStoreCambodia", "Y");
+            outputData.put( "restrictInStoreOversea", "Y");
+        }
 
         return outputData;
     }
@@ -404,7 +403,8 @@ public class ReserveServiceImpl implements ReserveService {
         if ( inputData.containsKey( "isActiveInStoreOverseaYN" ) )
             outputData.setString( "restrictInStoreOversea", inputData.getString( "isActiveInStoreOverseaYN" ) );
 
-        outputData.setString( "isVirtualYN", inputData.getString( "isVirtual" ) );
+        outputData.setString( "isVirtualYN", inputData.getString( "isVirtualYN" ) );
+        outputData.setString( "vExistYN", inputData.getString( "vExistYN" ) );
 
         return outputData;
     }
@@ -412,6 +412,7 @@ public class ReserveServiceImpl implements ReserveService {
     private M3n9sZe retrieveCardStatus( M3n9sZe inputData ) {
         M3n9sZe outputData = new M3n9sZe();
         String isVirtual = "Y";
+        String vExistYN = "N";
 
         M3n9sZe cardInfo = cardMapper.retrieveCardInfoByCardId( inputData );
 
@@ -420,31 +421,42 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
-        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
+        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ),
+                cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
+
+        M3n9sZe rOOS = new M3n9sZe();
+        rOOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
+        rOOS.setString( "schemeId" , "17" );
+        outputData.setString( "isActiveOnlineOverseaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOOS ),
+                cardInfo, "isActiveOnlineOverseaYN" ).getString( "isActiveOnlineOverseaYN" ) );
+
+        M3n9sZe rICS = new M3n9sZe();
+        rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
+        rICS.setString( "schemeId" , "18" );
+        M3n9sZe rICR = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rICS );
 
         M3n9sZe rIOS = new M3n9sZe();
         rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
-        rIOS.setString( "schemeId" , "17" );
-        outputData.setString( "isActiveOnlineOverseaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOS ), cardInfo, "isActiveOnlineOverseaYN" ).getString( "isActiveOnlineOverseaYN" ) );
+        rIOS.setString( "schemeId" , "19" );
+        M3n9sZe rIOR = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOS );
+        outputData.setString( "isActiveInStoreOverseaYN", checkStatus ( rIOR , cardInfo, "isActiveInStoreOverseaYN" ).getString( "isActiveInStoreOverseaYN" ) );
 
         if ( !cardInfo.getString( "cardType" ).equals( CardType.VIRTUAL.toString() ) ) {
             isVirtual = "N";
-            M3n9sZe rICS = new M3n9sZe();
-            rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
-            rICS.setString( "schemeId" , "18" );
-            outputData.setString( "isActiveInStoreCambodiaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rICS ), cardInfo, "isActiveInStoreCambodiaYN" ).getString( "isActiveInStoreCambodiaYN" ) );
-
-            M3n9sZe rIOsS = new M3n9sZe();
-            rIOsS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
-            rIOsS.setString( "schemeId" , "19" );
-            outputData.setString( "isActiveInStoreOverseaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOsS ), cardInfo, "isActiveInStoreOverseaYN" ).getString( "isActiveInStoreOverseaYN" ) );
+            outputData.setString( "isActiveInStoreCambodiaYN", checkStatus ( rICR, cardInfo, "isActiveInStoreCambodiaYN" ).getString( "isActiveInStoreCambodiaYN" ) );
+            outputData.setString( "isActiveInStoreOverseaYN", checkStatus ( rIOR , cardInfo, "isActiveInStoreOverseaYN" ).getString( "isActiveInStoreOverseaYN" ) );
         } else {
             outputData.setString( "isActiveInStoreCambodiaYN", "N" );
             outputData.setString( "isActiveInStoreOverseaYN", "N" );
+            if ( rICR == null && rIOR == null )
+                vExistYN = "Y";
         }
 
+        if ( inputData.containsKey( "mRetrieveYN" ) && inputData.getString( "mRetrieveYN" ).equalsIgnoreCase( "Y" ) ) {
+            outputData.setString( "isVirtualYN", isVirtual );
+            outputData.setString( "vExistYN", vExistYN );
+        }
         outputData.setString( "isFreezeCardYN", checkFreezeCard( inputData ).getString( "isFreezeCardYN" ) );
-        outputData.setString( "isVirtual", isVirtual );
 
         return outputData;
     }
