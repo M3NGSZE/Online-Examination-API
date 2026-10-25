@@ -248,34 +248,32 @@ public class ReserveServiceImpl implements ReserveService {
         }
 
         if ( isUpdate ) {
-            if ( ( inputData.containsKey( "restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase( "N" ) ) ||
-                 ( inputData.containsKey( "restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase( "N" ) ) ||
-                 ( inputData.containsKey( "restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase( "N" ) ) ||
-                 ( inputData.containsKey( "restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase( "N" ) ) ) {
+            if ((inputData.containsKey("restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase("N")) ||
+                    (inputData.containsKey("restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase("N")) ||
+                    (inputData.containsKey("restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase("N")) ||
+                    (inputData.containsKey("restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase("N"))) {
 
                 M3n9sZe removeRestriction = new M3n9sZe();
-                removeRestriction.setString( "remark", inputData.getString( "remark" ) );
-                removeRestriction.setString( "fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
-                removeRestriction.setString( "fromDate", LocalDate.now().minusDays( 1 ).format(DateTimeFormatter.ofPattern( "yyyyMMdd" ) ) );
-                removeRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
+                removeRestriction.setString("remark", inputData.getString("remark"));
+                removeRestriction.setString("fromDate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                removeRestriction.setString("fromDate", LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                removeRestriction.setLocalDateTime("updatedAt", LocalDateTime.now());
 
-                cardRestrictionMapper.updateRemoveRestrictionCard( removeRestriction );
+                cardRestrictionMapper.updateRemoveRestrictionCard(removeRestriction);
 
-            } else if ( ( inputData.containsKey( "restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase( "Y" ) ) ||
-                    ( inputData.containsKey( "restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase( "Y" ) ) ||
-                    ( inputData.containsKey( "restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase( "Y" ) ) ||
-                    ( inputData.containsKey( "restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase( "Y" ) ) ) {
+            } else if ((inputData.containsKey("restrictOnlineCambodia") && inputData.getString("restrictOnlineCambodia").equalsIgnoreCase("Y")) ||
+                    (inputData.containsKey("restrictOnlineOversea") && inputData.getString("restrictOnlineOversea").equalsIgnoreCase("Y")) ||
+                    (inputData.containsKey("restrictInStoreCambodia") && inputData.getString("restrictInStoreCambodia").equalsIgnoreCase("Y")) ||
+                    (inputData.containsKey("restrictInStoreOversea") && inputData.getString("restrictInStoreOversea").equalsIgnoreCase("Y"))) {
 
                 M3n9sZe reapplyRestriction = new M3n9sZe();
-                reapplyRestriction.setString( "remark", inputData.getString( "remark" ) );
-                reapplyRestriction.setString( "toDate", cardInfo.getString( "expiredDate") );
-                reapplyRestriction.setLocalDateTime( "updatedAt", LocalDateTime.now() );
+                reapplyRestriction.setString("remark", inputData.getString("remark"));
+                reapplyRestriction.setString("toDate", cardInfo.getString("expiredDate"));
+                reapplyRestriction.setLocalDateTime("updatedAt", LocalDateTime.now());
 
-                cardRestrictionMapper.updateReapplyRestrictionCard( reapplyRestriction );
+                cardRestrictionMapper.updateReapplyRestrictionCard(reapplyRestriction);
             }
         }
-
-
     }
 
     private M3n9sZe processFreezeCard( M3n9sZe inputData ) {
@@ -338,6 +336,7 @@ public class ReserveServiceImpl implements ReserveService {
             }
         }
     }
+
     private void validate( M3n9sZe param, String... sKey ) {
         for (String key: sKey ) {
             if ( !param.containsKey( key ) )
