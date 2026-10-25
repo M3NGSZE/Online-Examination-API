@@ -77,4 +77,57 @@ public class Concept {
 //                cb.equal(owner.get("user"), user)
 //        );
 //    }
+
+//    M3n9sZe checkByParam = paramCheck( inputData, cardStatus , sKey );
+//
+//            if ( checkByParam.getString( "isCheckYN" ).equalsIgnoreCase( "Y" ) ) {
+//        M3n9sZe mapFieldYN = mapField( cardStatus );
+//        outputData = inquiryCheck( inputData, mapFieldYN, sKey);
+//    } else {
+//        checkByParam.remove( "isCheckYN" );
+//        outputData = checkByParam;
+
+//    private M3n9sZe paramCheck(M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
+//        M3n9sZe outputData = new M3n9sZe();
+//        int X = 0;
+//        int Y = 0;
+//        String isCheckYN = "N";
+//
+//        for ( String key: sKey ) {
+//            if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "N" ) && inputData.containsKey( key )
+//                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+//                Y += 1;
+//            else if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "Y" ) && inputData.containsKey( key )
+//                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
+//                X += 1;
+//        }
+//
+//        if ( X >= 2 || Y >= 4 ) {
+//            isCheckYN = "Y";
+//            outputData.setString( "isFreezeYN", "Y" );
+//            outputData.setString( "isCheckYN", isCheckYN );
+//        } else
+//            outputData.setString( "isCheckYN", isCheckYN );
+//
+//        return outputData;
+//    }
+//
+//    private M3n9sZe inquiryCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
+//        M3n9sZe outputData = new M3n9sZe();
+//        int X = 0;
+//
+//        for ( String key: sKey ) {
+//            if ( inputParam.getString( "isVirtualYN" ).matches("[YN]" ) &&
+//                    inputData.containsKey( key ) && inputData.getString( key).equalsIgnoreCase( "Y" ) )
+//                X += 1;
+//
+//            if ( inputParam.getString( key ).equalsIgnoreCase( "N" ) )
+//                X += 1;
+//        }
+//
+//        if ( X >= 4 )
+//            outputData.setString( "isFreezeYN", "Y" );
+//
+//        return outputData;
+//    }
 }

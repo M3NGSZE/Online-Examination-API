@@ -352,15 +352,8 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe cardStatus = retrieveCardStatus( inputData );
 
         if ( cardStatus.getString("isFreezeCardYN" ).equalsIgnoreCase( "N" ) ) {
-            M3n9sZe checkByParam = paramCheck( inputData, cardStatus , sKey );
-
-            if ( checkByParam.getString( "isCheckYN" ).equalsIgnoreCase( "Y" ) ) {
-                M3n9sZe mapFieldYN = mapField( cardStatus );
-                outputData = inquiryCheck( inputData, mapFieldYN, sKey);
-            } else {
-                checkByParam.remove( "isCheckYN" );
-                outputData = checkByParam;
-            }
+            M3n9sZe mapFieldYN = mapField( cardStatus );
+            outputData = manipulateField( inputData, mapFieldYN, sKey );
 
         } else {
             outputData.setString( "isFreezeCardYN", "Y" );
@@ -369,48 +362,28 @@ public class ReserveServiceImpl implements ReserveService {
         outputData.setString( "cardId", inputData.getString( "cardId" ) );
         outputData.setString( "isVirtual", cardStatus.getString( "isVirtual" ) );
 
-        return outputData;
-    }
-
-    private M3n9sZe paramCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
-        M3n9sZe outputData = new M3n9sZe();
-        int X = 0;
-        int Y = 0;
-        String isCheckYN = "N";
-
-        for ( String key: sKey ) {
-            if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "N" ) && inputData.containsKey( key )
-                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
-                Y += 1;
-            else if ( inputParam.getString( "isVirtual" ).equalsIgnoreCase( "Y" ) && inputData.containsKey( key )
-                    && inputData.getString( key ).equalsIgnoreCase( "Y" ) )
-                X += 1;
-        }
-
-        if ( X >= 2 || Y >= 4 ) {
-            isCheckYN = "Y";
-            outputData.setString( "isFreezeYN", "Y" );
-            outputData.setString( "isCheckYN", isCheckYN );
-        } else
-            outputData.setString( "isCheckYN", isCheckYN );
+        int y = 0;
+        if ( y == 0 )
+            throw new BadRequestException( "something");
 
         return outputData;
     }
 
-    private M3n9sZe inquiryCheck( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
+
+
+    private M3n9sZe manipulateField( M3n9sZe inputData, M3n9sZe inputParam, String... sKey ) {
         M3n9sZe outputData = new M3n9sZe();
-        int X = 0;
+        int x = 0;
 
         for ( String key: sKey ) {
-            if ( inputParam.getString( "isVirtualYN" ).matches("[YN]" ) &&
+            if ( inputParam.getString("isVirtualYN" ).matches( "[YN]" ) &&
                     inputData.containsKey( key ) && inputData.getString( key).equalsIgnoreCase( "Y" ) )
-                X += 1;
-
-            if ( inputParam.getString( key ).equalsIgnoreCase( "N" ) )
-                X += 1;
+                x += 1;
+            else if ( inputParam.getString( key ).equalsIgnoreCase( "N" ) )
+                x += 1;
         }
 
-        if ( X >= 4 )
+        if ( x >= 4 )
             outputData.setString( "isFreezeYN", "Y" );
 
         return outputData;
@@ -431,7 +404,7 @@ public class ReserveServiceImpl implements ReserveService {
         if ( inputData.containsKey( "isActiveInStoreOverseaYN" ) )
             outputData.setString( "restrictInStoreOversea", inputData.getString( "isActiveInStoreOverseaYN" ) );
 
-        outputData.setString( "isVirtual", inputData.getString( "isVirtual" ) );
+        outputData.setString( "isVirtualYN", inputData.getString( "isVirtual" ) );
 
         return outputData;
     }
@@ -447,7 +420,7 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
-        outputData.setString( "isActiveOnlineCambodia", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
+        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ), cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
 
         M3n9sZe rIOS = new M3n9sZe();
         rIOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
@@ -466,8 +439,8 @@ public class ReserveServiceImpl implements ReserveService {
             rIOsS.setString( "schemeId" , "19" );
             outputData.setString( "isActiveInStoreOverseaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rIOsS ), cardInfo, "isActiveInStoreOverseaYN" ).getString( "isActiveInStoreOverseaYN" ) );
         } else {
-            outputData.setString( "isActiveInStoreCambodia", "N" );
-            outputData.setString( "isActiveInStoreOversea", "N" );
+            outputData.setString( "isActiveInStoreCambodiaYN", "N" );
+            outputData.setString( "isActiveInStoreOverseaYN", "N" );
         }
 
         outputData.setString( "isFreezeCardYN", checkFreezeCard( inputData ).getString( "isFreezeCardYN" ) );
