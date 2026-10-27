@@ -421,14 +421,14 @@ public class ReserveServiceImpl implements ReserveService {
         M3n9sZe rOCS = new M3n9sZe();
         rOCS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOCS.setString( "schemeId" , "16" );
-        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS ),
-                cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
+        M3n9sZe rOSR = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOCS );
+        outputData.setString( "isActiveOnlineCambodiaYN", checkStatus ( rOSR, cardInfo, "isActiveOnlineCambodiaYN" ).getString( "isActiveOnlineCambodiaYN" ) );
 
         M3n9sZe rOOS = new M3n9sZe();
         rOOS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
         rOOS.setString( "schemeId" , "17" );
-        outputData.setString( "isActiveOnlineOverseaYN", checkStatus ( cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOOS ),
-                cardInfo, "isActiveOnlineOverseaYN" ).getString( "isActiveOnlineOverseaYN" ) );
+        M3n9sZe rOOR = cardRestrictionMapper.retrieveCardRestrictionByCardNumberAndSchemeId( rOOS );
+        outputData.setString( "isActiveOnlineOverseaYN", checkStatus ( rOOR, cardInfo, "isActiveOnlineOverseaYN" ).getString( "isActiveOnlineOverseaYN" ) );
 
         M3n9sZe rICS = new M3n9sZe();
         rICS.setString( "cardNumber" , cardInfo.getString( "cardNumber" ) );
@@ -455,6 +455,10 @@ public class ReserveServiceImpl implements ReserveService {
         if ( inputData.containsKey( "mRetrieveYN" ) && inputData.getString( "mRetrieveYN" ).equalsIgnoreCase( "Y" ) ) {
             outputData.setString( "isVirtualYN", isVirtual );
             outputData.setString( "vExistYN", vExistYN );
+            outputData.addM3n9sZe( "16", null );
+            outputData.addM3n9sZe( "17", null );
+            outputData.addM3n9sZe( "18", null );
+            outputData.addM3n9sZe( "19", null );
         }
         outputData.setString( "isFreezeCardYN", checkFreezeCard( inputData ).getString( "isFreezeCardYN" ) );
 
